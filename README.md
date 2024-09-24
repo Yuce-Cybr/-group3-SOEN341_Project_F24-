@@ -6,7 +6,7 @@ This project consist of creating a Peer Assessment System meant to be use for un
 
 
 
-# Team Roles:
+## Team Roles
 - **Mridul and Aryan**: Task Breakdown and user stories 
 - **Paul and Sitherankan**: ReadMe and managing GitHub
 - **Youssef**: Front-end
