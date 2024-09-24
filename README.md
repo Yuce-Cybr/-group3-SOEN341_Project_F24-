@@ -4,9 +4,9 @@ This project consist of creating a Peer Assessment System meant to be use for un
 
 
 # Team Roles:
-- ** Mridul and Aryan: Task Breakdown and user stories 
-- ** Paul and Sitherankan: ReadMe and managing the GitHub
-- ** Youssef: Front-end
-- ** David: Back-end
-- ** Mridul: Meeting Minutes
-- ** Paul and Sitherankan: Sprint Planning
+- Mridul and Aryan: Task Breakdown and user stories 
+- Paul and Sitherankan: ReadMe and managing the GitHub
+- Youssef: Front-end
+- David: Back-end
+- Mridul: Meeting Minutes
+- Paul and Sitherankan: Sprint Planning
