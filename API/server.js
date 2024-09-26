@@ -1,6 +1,5 @@
 import express from 'express';
-import auth from './database/firbase.js';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import createUser from './database/firbase.js';
 
 const app = express()
 const port = 3000
@@ -16,8 +15,8 @@ app.post('/user', async (req, res) => {
     
     const { email, password } = req.body;
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-        res.status(201).send(`User registered: ${userCredential.user}`);
+        const user = await createUser(email, password)
+        res.status(201).send(`User registered: ${user}`);
     } catch (error) {
         console.error("Error registering user:", error.message);
     }
