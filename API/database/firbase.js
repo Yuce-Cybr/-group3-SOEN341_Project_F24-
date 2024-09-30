@@ -26,5 +26,6 @@ export default async function createUser(email, password) {
     return userCredential.user;
   } catch (error) {
     console.error("Error registering user:", error.code, error.message);
+    
   }
 };
