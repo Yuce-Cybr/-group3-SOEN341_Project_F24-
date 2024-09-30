@@ -1,3 +1,5 @@
+/* App.css */
+
 .App {
   text-align: center;
 }
@@ -14,18 +16,60 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  height: 100vh;
+  background-color: #282c34;
+  background-image: url('http://localhost:3000/background.jpg'); /* Full local path */
+  background-size: cover;
+  background-position: center;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+
+.page-title {
+  font-size: 3rem; /* Large font size for the title */
+  margin-bottom: 20px; /* Space below the title */
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column; /* Stack input, select, and button vertically */
+  width: 300px; /* Ensure consistent width for input group */
+}
+
+.input-group input {
+  margin: 10px 0; /* Add vertical spacing between input fields */
+  width: 100%; /* Make input elements take full width of the input-group */
+  padding: 10px; /* Add padding for better spacing inside input fields */
+  border-radius: 4px; /* Rounded corners for aesthetics */
+  box-sizing: border-box; /* Prevent padding from affecting width */
+}
+
+.small-input {
+  margin: 10px 0; /* Spacing between elements */
+  width: 80%; /* Smaller width for dropdown */
+  padding: 8px; /* Padding inside input elements */
+  border-radius: 4px; /* Rounded borders for aesthetics */
+}
+
+.small-button {
+  margin: 10px 0; /* Spacing between buttons */
+  width: 60%; /* Smaller width for buttons */
+  padding: 8px; /* Padding for buttons */
+  border-radius: 4px; /* Rounded borders */
+  background-color: #007BFF; /* Blue background for buttons */
+  color: white; /* White text color */
+  font-weight: bold; /* Bold font for buttons */
+  cursor: pointer; /* Pointer cursor on hover */
+  border: none; /* No border */
+}
+
+.error {
+  color: #ff0000; /* Red color for error messages */
+  margin-bottom: 15px; /* Margin below error message */
 }
 
 @keyframes App-logo-spin {

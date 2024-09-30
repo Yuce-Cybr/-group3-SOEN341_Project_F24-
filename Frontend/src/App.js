@@ -44,34 +44,41 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <h1 className="page-title">Peer Assessment Tool</h1> {/* Title over the background */}
         {!user ? (
           <div>
             <h2>Login</h2>
             {error && <p className="error">{error}</p>}
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="Student">Student</option>
-              <option value="Instructor">Instructor</option>
-            </select>
-            <button onClick={handleLogin}>Login</button>
+            <div className="input-group">
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="small-input" // Add class for smaller size
+              >
+                <option value="Student">Student</option>
+                <option value="Instructor">Instructor</option>
+              </select>
+              <button onClick={handleLogin} className="small-button">Login</button>
+            </div>
           </div>
         ) : (
           <div>
             <h2>Welcome, {user.username}</h2>
             <h3>Role: {user.role}</h3>
             <RoleBasedDashboard role={user.role} />
-            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleLogout} className="small-button">Logout</button>
           </div>
         )}
       </header>
@@ -89,8 +96,8 @@ function RoleBasedDashboard({ role }) {
 
   const handleUpload = () => {
     Papa.parse(file, {
-      complete: function(results) {
-        console.log("Parsed results:", results);
+      complete: function (results) {
+        console.log('Parsed results:', results);
         setStudents(results.data);
       },
       header: true
@@ -109,9 +116,8 @@ function RoleBasedDashboard({ role }) {
         <h3>Instructor Dashboard</h3>
         <p>Here you can create teams and manage student groups.</p>
         <input type="file" accept=".csv" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload CSV</button>
-        <button onClick={handleSaveTeams}>Save Teams</button>
-        {/* Display and manage student team assignments */}
+        <button onClick={handleUpload} className="small-button">Upload CSV</button>
+        <button onClick={handleSaveTeams} className="small-button">Save Teams</button>
       </div>
     );
   } else {
