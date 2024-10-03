@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors'; // Ensure correct import
 import { createUser, loginUser } from './database/firebase.js'; 
 
+import { connectDB, getUsers, createUserInDB } from './database/mongo.js'
+
 const app = express();
 const port = 3000;
 
@@ -15,17 +17,22 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+connectDB();
+
 app.get('/', (req, res) => {
   res.send('Hello world!');
 });
 
 app.post('/user', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
   try {
     const user = await createUser(email, password);
     const response = {
       accessToken: user.stsTokenManager.accessToken
     };
+
+    createUserInDB(email, role);
+
     res.status(201).send(response);
   } catch (error) {
     console.error('Error registering user:', error.message);

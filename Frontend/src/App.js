@@ -12,7 +12,6 @@ function App() {
 
   // Handle login logic
   const handleLogin = async () => {
-    console.log(username + password)
     if (username && password) {
       try {
         const response = await axios.post('https://soen341-api.onrender.com/login', {
@@ -35,13 +34,13 @@ function App() {
 
   // Handle sign-up logic
   const handleSignUp = async () => {
-    console.log(username + password)
 
     if (username && password.length >= 8) {
       try {
         const response = await axios.post('https://soen341-api.onrender.com/user', {
           email: username,
-          password
+          password,
+          role
         });
         if (response.status === 201) {
           alert('Sign-up successful! You can now log in.');
