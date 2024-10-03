@@ -12,6 +12,7 @@ function App() {
 
   // Handle login logic
   const handleLogin = async () => {
+    console.log(username + password)
     if (username && password) {
       try {
         const response = await axios.post('https://soen341-api.onrender.com/login', {
@@ -33,6 +34,31 @@ function App() {
     }
   };
 
+  // Handle sign-up logic
+  const handleSignUp = async () => {
+    console.log(username + password)
+
+    if (username && password.length >= 8) {
+      try {
+        const response = await axios.post('https://soen341-api.onrender.com/user', {
+          email: username,
+          password
+        });
+        if (response.status === 201) {
+          alert('Sign-up successful! You can now log in.');
+          setError('');
+        } else {
+          throw new Error('Failed to sign up');
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || 'Sign-up failed');
+        console.error('Sign-up error:', err);
+      }
+    } else {
+      setError('Password must be at least 8 characters long');
+    }
+  };
+
   // Handle logout
   const handleLogout = () => {
     setUser(null);
@@ -44,7 +70,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1 className="page-title">Peer Assessment Tool</h1> {/* Title over the background */}
+        <h1 className="page-title">Peer Assessment Tool</h1>
         {!user ? (
           <div>
             <h2>Login</h2>
@@ -58,19 +84,20 @@ function App() {
               />
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="Password (min 8 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="small-input" // Add class for smaller size
+                className="small-input"
               >
                 <option value="Student">Student</option>
                 <option value="Instructor">Instructor</option>
               </select>
               <button onClick={handleLogin} className="small-button">Login</button>
+              <button onClick={handleSignUp} className="small-button">Sign Up</button> {/* Add Sign Up Button */}
             </div>
           </div>
         ) : (

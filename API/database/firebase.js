@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"; // Ensure proper imports for auth
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"; // Include signInWithEmailAndPassword for login
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -19,13 +19,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Function to create a user with email and password
-export default async function createUser(email, password) {
+// Function to create a user with email and password (Sign-up)
+export async function createUser(email, password) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     return userCredential.user;
   } catch (error) {
     console.error("Error registering user:", error.code, error.message);
-    
+    throw new Error(error.message);
   }
-};
+}
+
+// Function to log in a user with email and password (Login)
+export async function loginUser(email, password) {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+  } catch (error) {
+    console.error("Login error:", error.code, error.message);
+    throw new Error(error.message); // Forward the error to the server for handling
+  }
+}
