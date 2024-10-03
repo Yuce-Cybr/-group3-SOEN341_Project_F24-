@@ -16,9 +16,8 @@ function App() {
     if (username && password) {
       try {
         const response = await axios.post('https://soen341-api.onrender.com/login', {
-          username,
-          password,
-          role
+          email: username,
+          password
         });
         if (response.status === 200) {
           setUser(response.data);
