@@ -29,7 +29,7 @@ function HomePage() {
 
   return (
     <div className="login-page">
-      <h1 className="website-title">EvalMate</h1>  {/* Title added at the top */}
+      <h1 className="website-title">RateMyPeer</h1>  {/* Title added at the top */}
       <div className="login-card">
         <h2>Sign In</h2>
         {authError && <p className="error">{authError}</p>}

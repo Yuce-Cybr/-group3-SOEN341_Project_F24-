@@ -9,7 +9,6 @@ body, html {
   font-family: 'Arial', sans-serif;
   background: linear-gradient(135deg, #2A00B7, #42006c); 
   height: 100%;
-  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;  
