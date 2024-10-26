@@ -11,9 +11,9 @@ const InstructorDashboard = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const {data, error} = await supabase
-      .from('users')
-      .select()
+      const { data, error } = await supabase
+        .from('users')
+        .select()
 
       if (error) {
         setFetchError('Could not fetch user id')
@@ -31,22 +31,42 @@ const InstructorDashboard = () => {
 
   // Redirect if user is not authenticated or not an instructor
   //if (!user || role !== 'Instructor') {
-    //return <Navigate to="/" />;
+  //return <Navigate to="/" />;
   //}
 
   return (
     <div className='instructor'>
-      <h1>hey</h1>
+      <table className="table ">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Email</th>
+            <th>User ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users && (users.map(user => (
+            <tr>
+              <td>{user.user_id}</td>
+              <td>{user.email}</td>
+              <td>{user.team_id}</td>
+            </tr>
+          )
+          ))}
+        </tbody>
+      </table>
       {fetchError && (<p>{fetchError}</p>)}
       {users && (
-          <div className='usersid'> 
-            {users.map(user => (
-              <p>{user.email}</p>
-            ))}
-          </div>
+        <div className='usersid'>
+          {users.map(user => (
+            <p>{user.email}{user.role}</p>
+          ))}
+        </div>
       )}
 
     </div>
+
+
   );
 };
 
