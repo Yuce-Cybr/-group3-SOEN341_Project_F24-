@@ -39,6 +39,9 @@ export const AuthProvider = ({ children }) => {
         if (fetchedRole === 'Student') {
           navigate('/student-dashboard');
         }
+        if (fetchedRole === 'Instructor') {
+          navigate('/instructor-dashboard');
+        }
       }
 
       setLoading(false);

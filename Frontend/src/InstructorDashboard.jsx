@@ -41,7 +41,7 @@ const InstructorDashboard = () => {
           <tr>
             <th>User ID</th>
             <th>Email</th>
-            <th>User ID</th>
+            <th>Team ID</th>
           </tr>
         </thead>
         <tbody>
