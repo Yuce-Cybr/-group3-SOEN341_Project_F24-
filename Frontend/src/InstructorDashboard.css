@@ -62,4 +62,18 @@
     border: none;
     cursor: pointer;
   }
+  .dashboard-container {
+    display: flex;
+  }
+  
+  .instructor-dashboard {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   

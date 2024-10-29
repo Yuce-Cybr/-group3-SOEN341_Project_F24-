@@ -1,0 +1,40 @@
+.sidebar {
+    width: 200px;
+    background-color: #42006c;
+    color: #fff;
+    padding: 20px;
+    transition: width 0.3s;
+  }
+  
+  .sidebar.collapsed {
+    width: 60px;
+  }
+  
+  .toggle-button {
+    background-color: #2a00b7;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar-nav ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar-nav ul li {
+    margin: 10px 0;
+  }
+  
+  .sidebar-nav ul li a {
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .sidebar-nav ul li a:hover {
+    text-decoration: underline;
+  }
+  
