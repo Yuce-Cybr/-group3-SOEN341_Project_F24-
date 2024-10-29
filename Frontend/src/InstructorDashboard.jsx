@@ -1,74 +1,115 @@
-import React from 'react';
-import { useAuth } from './AuthContext'; // Make sure the import path is correct
+import React, { useEffect, useState } from 'react';
+import { useAuth } from './AuthContext'; // Ensure the correct import path
 import { Navigate } from 'react-router-dom';
 import supabase from './supabase';
-import { useEffect, useState } from 'react';
+import '../src/InstructorDashboard.css'; // Assuming custom CSS file for styling
 
 const InstructorDashboard = () => {
-  //const { user, role } = useAuth();  // Correctly destructure user and role from the AuthContext
-  const [fetchError, setFetchError] = useState(null)
-  const [users, setUsers] = useState(null)
+  const { user, role, logout } = useAuth();  // Assuming logout function is provided by AuthContext
+  const [fetchError, setFetchError] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from('users')
-        .select()
+      setLoading(true);
+      const { data, error } = await supabase.from('users').select();
 
       if (error) {
-        setFetchError('Could not fetch user id')
-        setUsers(null)
-        console.log(error)
+        setFetchError('Could not fetch users');
+        console.log(error);
+      } else {
+        setUsers(data);
       }
+      setLoading(false);
+    };
+    fetchUsers();
+  }, []);
 
-      if (data) {
-        setUsers(data)
-        setFetchError(null)
-      }
-    }
-    fetchUsers()
-  }, [])
+  // Handle search query change
+  const handleSearch = (e) => setSearchQuery(e.target.value);
+
+  // Filter users based on search query
+  const filteredUsers = users.filter(user =>
+    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.team_id?.toString().includes(searchQuery)
+  );
 
   // Redirect if user is not authenticated or not an instructor
-  //if (!user || role !== 'Instructor') {
-  //return <Navigate to="/" />;
-  //}
+  if (!user || role !== 'Instructor') {
+    return <Navigate to="/" />;
+  }
 
   return (
-    <div className='instructor'>
-      <table className="table ">
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>Email</th>
-            <th>Team ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users && (users.map(user => (
-            <tr>
-              <td>{user.user_id}</td>
-              <td>{user.email}</td>
-              <td>{user.team_id}</td>
-            </tr>
-          )
-          ))}
-        </tbody>
-      </table>
-      {fetchError && (<p>{fetchError}</p>)}
-      {users && (
-        <div className='usersid'>
-          {users.map(user => (
-            <p>{user.email}{user.role}</p>
-          ))}
+    <div className="instructor-dashboard">
+      <header className="dashboard-header">
+        <h2>Instructor Dashboard</h2>
+        <button onClick={logout} className="logout-btn">Logout</button>
+      </header>
+
+      {/* Profile Section */}
+      <section className="profile-card">
+        <h3>Instructor Profile</h3>
+        <p><strong>Name:</strong> {user.name || "Instructor"}</p>
+        <p><strong>Email:</strong> {user.email}</p>
+        <p><strong>Role:</strong> {role}</p>
+      </section>
+
+      {/* Search Bar */}
+      <section className="search-bar">
+        <input
+          type="text"
+          placeholder="Search by email or team ID"
+          value={searchQuery}
+          onChange={handleSearch}
+        />
+      </section>
+
+      {/* Users Table */}
+      <section className="users-table">
+        {loading ? (
+          <p>Loading users...</p>
+        ) : fetchError ? (
+          <p>{fetchError}</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>Team ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map((user) => (
+                <tr key={user.user_id} onClick={() => setSelectedUser(user)}>
+                  <td>{user.user_id}</td>
+                  <td>{user.email}</td>
+                  <td>{user.team_id}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* Detailed User Info Modal */}
+      {selectedUser && (
+        <div className="user-details-modal">
+          <h3>User Details</h3>
+          <p><strong>User ID:</strong> {selectedUser.user_id}</p>
+          <p><strong>Email:</strong> {selectedUser.email}</p>
+          <p><strong>Team ID:</strong> {selectedUser.team_id}</p>
+          <p><strong>Role:</strong> {selectedUser.role}</p>
+          <button onClick={() => setSelectedUser(null)} className="close-btn">Close</button>
         </div>
       )}
-
     </div>
-
-
   );
 };
 
 export default InstructorDashboard;
+
 
