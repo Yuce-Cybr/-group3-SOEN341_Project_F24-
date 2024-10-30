@@ -65,13 +65,15 @@ const InstructorDashboard = () => {
 
   const handleCreateTeam = async () => {
     if (newTeamName) {
-      const { data, error } = await supabase.from('teams').insert([{ name: newTeamName }]);
+      const { error } = await supabase.from('teams').upsert([{ team_id: newTeamName }]);
       if (error) {
         console.error('Error creating team:', error);
       } else {
-        setTeams([...teams, ...data]);
+        const { data } = await supabase.from('teams').select('*');
+        setTeams(data);
         setNewTeamName('');
         setIsAddTeamModalOpen(false);
+        console.log(teams)
       }
     }
   };
