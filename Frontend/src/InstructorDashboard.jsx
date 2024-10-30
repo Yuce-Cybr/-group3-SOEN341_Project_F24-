@@ -150,7 +150,7 @@ const InstructorDashboard = () => {
                       >
                         <option value="">Select Team</option>
                         {teams.map(team => (
-                          <option key={team.team_id} value={team.team_id}>{team.name}</option>
+                          <option key={team.team_id} value={team.team_id}>{team.team_id}</option>
                         ))}
                       </select>
                     </td>
