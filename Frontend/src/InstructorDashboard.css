@@ -1,9 +1,11 @@
-instructor-dashboard {
+.instructor-dashboard {
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
     font-family: Arial, sans-serif;
+    background-color: #f0f0f0 !important;  /* !important will override App.css */
+    padding: 20px;
   }
   
   h1 {
