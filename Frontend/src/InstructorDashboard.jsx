@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Papa from 'papaparse';
 import { useAuth } from './AuthContext';
 import { Navigate } from 'react-router-dom';
 import supabase from './supabase';
@@ -7,31 +8,85 @@ import '../src/InstructorDashboard.css';
 
 const InstructorDashboard = () => {
   const { user, role, logout } = useAuth();
-  const [fetchError, setFetchError] = useState(null);
   const [users, setUsers] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
+  const [newTeamName, setNewTeamName] = useState('');
+  const [csvData, setCsvData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersAndTeams = async () => {
       setLoading(true);
-      const { data, error } = await supabase.from('users').select();
-      if (error) {
-        setFetchError('Could not fetch users');
-        console.log(error);
+      const { data: usersData, error: usersError } = await supabase.from('users').select();
+      const { data: teamsData, error: teamsError } = await supabase.from('teams').select();
+
+      if (usersError || teamsError) {
+        console.error('Error fetching data:', usersError || teamsError);
       } else {
-        setUsers(data);
+        setUsers(usersData);
+        setTeams(teamsData);
       }
       setLoading(false);
     };
-    fetchUsers();
+    fetchUsersAndTeams();
   }, []);
 
-  const handleSearch = (e) => setSearchQuery(e.target.value);
+  const handleCsvUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        complete: (results) => setCsvData(results.data),
+        error: (error) => console.error('Error parsing CSV:', error),
+      });
+    }
+  };
+
+  const handleImportCsv = async () => {
+    if (csvData) {
+      const newUsers = csvData.map(row => ({
+        email: row.Email,
+        name: row.Name,
+        team_id: row.TeamID,
+        role: 'Student',
+      }));
+
+      const { error } = await supabase.from('users').insert(newUsers);
+      if (error) {
+        console.error('Error importing users:', error);
+      } else {
+        setUsers([...users, ...newUsers]);
+      }
+    }
+  };
+
+  const handleCreateTeam = async () => {
+    if (newTeamName) {
+      const { data, error } = await supabase.from('teams').insert([{ name: newTeamName }]);
+      if (error) {
+        console.error('Error creating team:', error);
+      } else {
+        setTeams([...teams, ...data]);
+        setNewTeamName('');
+        setIsAddTeamModalOpen(false);
+      }
+    }
+  };
+
+  const handleAssignTeam = async (userId, teamId) => {
+    const { error } = await supabase.from('users').update({ team_id: teamId }).eq('user_id', userId);
+    if (error) {
+      console.error('Error assigning team:', error);
+    } else {
+      setUsers(users.map(user => (user.user_id === userId ? { ...user, team_id: teamId } : user)));
+    }
+  };
+
   const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.team_id?.toString().includes(searchQuery)
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (!user || role !== 'Instructor') {
@@ -47,7 +102,6 @@ const InstructorDashboard = () => {
           <button onClick={logout} className="logout-btn">Logout</button>
         </header>
 
-        {/* Profile Section */}
         <section className="profile-card">
           <h3>Instructor Profile</h3>
           <p><strong>Name:</strong> {user.name || "Instructor"}</p>
@@ -55,37 +109,51 @@ const InstructorDashboard = () => {
           <p><strong>Role:</strong> {role}</p>
         </section>
 
-        {/* Search Bar */}
+        <section className="actions">
+          <input type="file" accept=".csv" onChange={handleCsvUpload} />
+          <button onClick={handleImportCsv} disabled={!csvData}>Import CSV</button>
+          <button onClick={() => setIsAddTeamModalOpen(true)}>Add Team</button>
+        </section>
+
         <section className="search-bar">
           <input
             type="text"
-            placeholder="Search by email or team ID"
+            placeholder="Search by email"
             value={searchQuery}
-            onChange={handleSearch}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </section>
 
-        {/* Users Table */}
         <section className="users-table">
           {loading ? (
             <p>Loading users...</p>
-          ) : fetchError ? (
-            <p>{fetchError}</p>
           ) : (
-            <table>
+            <table className="styled-table">
               <thead>
                 <tr>
                   <th>User ID</th>
                   <th>Email</th>
-                  <th>Team ID</th>
+                  <th>Team</th>
+                  <th>Assign Team</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
-                  <tr key={user.user_id} onClick={() => setSelectedUser(user)}>
-                    <td>{user.user_id}</td>
-                    <td>{user.email}</td>
-                    <td>{user.team_id}</td>
+                {filteredUsers.map(user => (
+                  <tr key={user.user_id}>
+                    <td onClick={() => setSelectedUser(user)}>{user.user_id}</td>
+                    <td onClick={() => setSelectedUser(user)}>{user.email}</td>
+                    <td>{teams.find(team => team.team_id === user.team_id)?.name || 'Unassigned'}</td>
+                    <td>
+                      <select
+                        value={user.team_id || ''}
+                        onChange={(e) => handleAssignTeam(user.user_id, e.target.value)}
+                      >
+                        <option value="">Select Team</option>
+                        {teams.map(team => (
+                          <option key={team.team_id} value={team.team_id}>{team.name}</option>
+                        ))}
+                      </select>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -93,7 +161,22 @@ const InstructorDashboard = () => {
           )}
         </section>
 
-        {/* Detailed User Info Modal */}
+        {isAddTeamModalOpen && (
+          <div className="modal">
+            <div className="modal-content">
+              <h3>Create New Team</h3>
+              <input
+                type="text"
+                placeholder="Enter team name"
+                value={newTeamName}
+                onChange={(e) => setNewTeamName(e.target.value)}
+              />
+              <button onClick={handleCreateTeam} className="confirm-btn">Create Team</button>
+              <button onClick={() => setIsAddTeamModalOpen(false)} className="close-btn">Cancel</button>
+            </div>
+          </div>
+        )}
+
         {selectedUser && (
           <div className="user-details-modal">
             <h3>User Details</h3>
@@ -110,6 +193,7 @@ const InstructorDashboard = () => {
 };
 
 export default InstructorDashboard;
+
 
 
 
