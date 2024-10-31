@@ -1,41 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import supabase from './supabase';
 import SidebarComponent from './SidebarComponent';
 import '../src/StudentDashboard.css';
 
-  const StudentDashboard = () => {
+const StudentDashboard = () => {
   const { user, role, logout } = useAuth();
   const [team, setTeam] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Debug logs
+  useEffect(() => {
+    console.log('User:', user);
+    console.log('Role:', role);
+  }, [user, role]);
+
   useEffect(() => {
     const fetchTeamData = async () => {
       setLoading(true);
-      const { data: teamData, error: teamError } = await supabase
-        .from('students')
-        .select('*, members:students(email, team_id)')
-        .eq('team_id', user.team_id)
-        .single();
+      if (user && user.team_id) {
+        const { data: teamData, error: teamError } = await supabase
+          .from('students')
+          .select('*, members:students(email, team_id)')
+          .eq('team_id', user.team_id)
+          .single();
 
-      if (teamError) {
-        console.error('Error fetching team data:', teamError);
+        if (teamError) {
+          console.error('Error fetching team data:', teamError);
+        } else {
+          setTeam(teamData);
+          setTeamMembers(teamData.members);
+        }
       } else {
-        setTeam(teamData);
-        setTeamMembers(teamData.members);
+        // No user or team_id, handle appropriately
+        setTeam(null);
+        setTeamMembers([]);
       }
       setLoading(false);
     };
 
-    if (user.team_id) {
-      fetchTeamData();
-    } else {
-      setLoading(false);
-    }
-  }, [user.team_id]);
+    fetchTeamData();
+  }, [user]);
 
+  // Redirect if user is not logged in or not a student
   if (!user || role !== 'Student') {
     return <Navigate to="/" />;
   }
@@ -64,14 +73,25 @@ import '../src/StudentDashboard.css';
               <h3>Your Team: {team.team_id}</h3>
               <h4>Team Members:</h4>
               <ul>
-                {teamMembers.map(member => (
-                  <li key={member.email}>{member.email}</li>
-                ))}
+                {teamMembers.length > 0 ? (
+                  teamMembers.map(member => (
+                    <li key={member.email}>{member.email}</li>
+                  ))
+                ) : (
+                  <li>No team members found.</li>
+                )}
               </ul>
             </div>
           ) : (
             <p>You are not assigned to any team.</p>
           )}
+        </section>
+
+        {/* Add Link to Peer Assessment */}
+        <section className="peer-assessment-link">
+          <Link to="/peer-assessment" className="peer-assessment-btn">
+            Go to Peer Assessment
+          </Link>
         </section>
       </div>
     </div>
@@ -79,4 +99,7 @@ import '../src/StudentDashboard.css';
 };
 
 export default StudentDashboard;
+
+
+
 

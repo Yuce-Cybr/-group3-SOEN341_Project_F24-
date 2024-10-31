@@ -115,4 +115,21 @@
       padding: 1rem;
     }
   }
+  css
+Copy code
+.peer-assessment-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 1.5rem;
+}
+
+.peer-assessment-btn:hover {
+  background-color: #0056b3;
+}
   
