@@ -30,19 +30,26 @@ export const AuthProvider = ({ children }) => {
     const handleSession = async (session) => {
       const currentUser = session?.user || null;
       setUser(currentUser);
-
+    
       if (currentUser) {
         // Fetch the role from the public.users table
         const fetchedRole = await fetchUserRole(currentUser.id);
         setRole(fetchedRole);
+        
         // Navigate based on role
         if (fetchedRole === 'Student') {
           navigate('/student-dashboard');
+        } else if (fetchedRole === 'Instructor') {
+          navigate('/instructor-dashboard'); // Navigate to instructor dashboard
+        } else {
+          // Handle other roles or default case if needed
+          navigate('/dashboard'); // Default navigation for other roles
         }
       }
-
+    
       setLoading(false);
     };
+    
 
     // Get current session
     const getSession = async () => {
