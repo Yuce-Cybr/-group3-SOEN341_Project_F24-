@@ -1,0 +1,83 @@
+/* PeerAssessment.css */
+
+.assessment-container {
+    display: flex; /* Use flexbox for layout */
+    height: 100vh; /* Full height of the viewport */
+    background-color: #f4f4f4; /* Light gray background */
+  }
+  
+  .peer-assessment {
+    flex: 1; /* Take the remaining space */
+    padding: 20px; /* Padding around the content */
+    background-color: #ffffff; /* White background for the content area */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    overflow-y: auto; /* Allow scrolling if content is too tall */
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between; /* Space between elements */
+    align-items: center; /* Center vertically */
+    margin-bottom: 20px; /* Margin below the header */
+  }
+  
+  .dashboard-header h2 {
+    font-size: 24px; /* Larger font size for the heading */
+    color: #333; /* Darker color for the heading */
+  }
+  
+  .dashboard-header button {
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white; /* White text color */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 10px 15px; /* Padding inside the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover */
+  }
+  
+  .dashboard-header button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+  }
+  
+  .peer-assessment p {
+    font-size: 18px; /* Slightly larger font size for paragraphs */
+    color: #555; /* Medium gray for paragraph text */
+    margin: 10px 0; /* Margin above and below paragraphs */
+  }
+  
+  /* Assessment form styles */
+  .assessment-form {
+    margin-top: 20px; /* Space above the form */
+  }
+  
+  .assessment-form label {
+    display: block; /* Make labels block-level */
+    margin: 10px 0 5px; /* Margin around labels */
+    font-weight: bold; /* Bold text for labels */
+  }
+  
+  .assessment-form input[type="text"],
+  .assessment-form textarea {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding inside the input */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 4px; /* Rounded corners */
+    margin-bottom: 15px; /* Space below input fields */
+  }
+  
+  .assessment-form input[type="submit"] {
+    background-color: #28a745; /* Success color */
+    color: white; /* White text color */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 10px 15px; /* Padding inside the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover */
+  }
+  
+  .assessment-form input[type="submit"]:hover {
+    background-color: #218838; /* Darker shade on hover */
+  }
+  

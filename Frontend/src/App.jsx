@@ -4,15 +4,19 @@ import HomePage from './HomePage';  // HomePage for Login
 import SignUp from './SignUp';      // SignUp Page for new account creation
 import StudentDashboard from './StudentDashboard';
 import InstructorDashboard from './InstructorDashboard';
+import PeerAssessment from './PeerAssessment';
+
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />  {/* Login Page */}
       <Route path="/signup" element={<SignUp />} />  {/* Sign-Up Page */}
-      <Route path="/student-dashboard" element={<StudentDashboard/>} />  {/* Sign-Up Page */}
-      <Route path="/instructor-dashboard" element={<InstructorDashboard/>} />  {/* Sign-Up Page */}
+      <Route path="/student-dashboard" element={<StudentDashboard />} />  {/* Student Dashboard */}
+      <Route path="/instructor-dashboard" element={<InstructorDashboard />} />  {/* Instructor Dashboard */}
+      <Route path="/peer-assessment" element={<PeerAssessment />} />
     </Routes>
   );
 };
 
 export default App;
+

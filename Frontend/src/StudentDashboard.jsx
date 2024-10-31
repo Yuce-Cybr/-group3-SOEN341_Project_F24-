@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import supabase from './supabase';
 import SidebarComponent from './SidebarComponent';
 import '../src/StudentDashboard.css';
@@ -10,45 +10,77 @@ const StudentDashboard = () => {
   const [teamId, setTeamId] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [assessments, setAssessments] = useState({}); // Track assessments
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTeamData = async () => {
-      setLoading(true); // Start loading
-      const { data, error } = await supabase
-        .from('students')
-        .select('team_id')
-        .eq('email', user.email)
-        .single();
+      setLoading(true);
+      setError(null);
 
-      if (error) {
-        console.error('Error fetching team data:', error);
-      } else {
-        setTeamId(data.team_id); // Save team_id
+      try {
+        const { data, error: teamError } = await supabase
+          .from('students')
+          .select('team_id')
+          .eq('email', user.email)
+          .single();
 
-        // Fetch team members based on team_id
+        if (teamError) throw teamError;
+
+        setTeamId(data.team_id);
+
         if (data.team_id) {
           const { data: teamMembersData, error: teamMembersError } = await supabase
             .from('students')
             .select('email')
             .eq('team_id', data.team_id);
-            console.log(teamMembersData);
+          
+          if (teamMembersError) throw teamMembersError;
 
-          if (teamMembersError) {
-            console.error('Error fetching team members:', teamMembersError);
-          } else {
-            setTeamMembers(teamMembersData); // Save team members
-          }
+          setTeamMembers(teamMembersData);
         }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false); // Stop loading
     };
 
     fetchTeamData();
-  }, [user.email]); // Depend on user.email to refetch if it changes
+  }, [user.email]);
 
   if (!user || role !== 'Student') {
     return <Navigate to="/" />;
   }
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
+
+  const handleAssessmentSubmit = async (memberEmail, assessment) => {
+    // Submit assessment to the database (example logic)
+    // Assuming there is an `assessments` table in your database
+    try {
+      const { error } = await supabase
+        .from('assessments')
+        .insert([{ assessor_email: user.email, assesse_email: memberEmail, assessment }]);
+      
+      if (error) throw error;
+
+      // Update assessments state to disable the submitted assessment
+      setAssessments((prev) => ({ ...prev, [memberEmail]: true }));
+    } catch (err) {
+      console.error('Error submitting assessment:', err);
+      setError(err.message);
+    }
+  };
+
+  const navigateToPeerAssessment = (memberEmail) => {
+    navigate(`/peer-assessment/${memberEmail}`); // Navigate to the peer assessment page for that member
+  };
 
   return (
     <div className="dashboard-container">
@@ -56,7 +88,7 @@ const StudentDashboard = () => {
       <div className="student-dashboard">
         <header className="dashboard-header">
           <h2>Student Dashboard</h2>
-          <button onClick={logout} className="logout-btn">Logout</button>
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
         </header>
 
         <section className="profile-card">
@@ -69,6 +101,8 @@ const StudentDashboard = () => {
         <section className="team-info">
           {loading ? (
             <p>Loading team data...</p>
+          ) : error ? (
+            <p>Error fetching data: {error}</p>
           ) : teamId ? (
             <div>
               <h3>Your Team ID: {teamId}</h3>
@@ -76,7 +110,22 @@ const StudentDashboard = () => {
               <ul>
                 {teamMembers.length > 0 ? (
                   teamMembers.map(member => (
-                    <li key={member.email}>{member.email}</li>
+                    <li key={member.email}>
+                      {member.email}
+                      {assessments[member.email] ? (
+                        <span> (Assessed)</span>
+                      ) : (
+                        <div>
+                          
+                          <button
+                            onClick={() => navigateToPeerAssessment(member.email)}
+                            disabled={assessments[member.email]} // Disable if already assessed
+                          >
+                            Go to Peer Assessment
+                          </button>
+                        </div>
+                      )}
+                    </li>
                   ))
                 ) : (
                   <li>No team members found.</li>
@@ -93,5 +142,7 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
+
+
 
 
