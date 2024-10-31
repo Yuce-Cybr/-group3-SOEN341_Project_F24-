@@ -20,7 +20,7 @@ const InstructorDashboard = () => {
   useEffect(() => {
     const fetchUsersAndTeams = async () => {
       setLoading(true);
-      const { data: usersData, error: usersError } = await supabase.from('users').select();
+      const { data: usersData, error: usersError } = await supabase.from('students').select();
       const { data: teamsData, error: teamsError } = await supabase.from('teams').select();
 
       if (usersError || teamsError) {
@@ -78,11 +78,11 @@ const InstructorDashboard = () => {
   };
 
   const handleAssignTeam = async (userId, teamId) => {
-    const { error } = await supabase.from('users').update({ team_id: teamId }).eq('user_id', userId);
+    const { error } = await supabase.from('students').update({ team_id: teamId }).eq('email', userId);
     if (error) {
       console.error('Error assigning team:', error);
     } else {
-      setUsers(users.map(user => (user.user_id === userId ? { ...user, team_id: teamId } : user)));
+      setUsers(users.map(user => (user.email === userId ? { ...user, team_id: teamId } : user)));
     }
   };
 
@@ -143,11 +143,11 @@ const InstructorDashboard = () => {
                   <tr key={user.user_id}>
                     <td onClick={() => setSelectedUser(user)}>{user.user_id}</td>
                     <td onClick={() => setSelectedUser(user)}>{user.email}</td>
-                    <td>{teams.find(team => team.team_id === user.team_id)?.name || 'Unassigned'}</td>
+                    <td>{teams.find(team => team.team_id === user.team_id)?.team_id || 'Unassigned'}</td>
                     <td>
                       <select
                         value={user.team_id || ''}
-                        onChange={(e) => handleAssignTeam(user.user_id, e.target.value)}
+                        onChange={(e) => handleAssignTeam(user.email, e.target.value)}
                       >
                         <option value="">Select Team</option>
                         {teams.map(team => (
