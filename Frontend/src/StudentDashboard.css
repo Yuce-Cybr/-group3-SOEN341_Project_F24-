@@ -114,3 +114,27 @@ p {
     padding: 1rem;
   }
 }
+.notification {
+  background-color: #d4edda; /* Light green background */
+  color: #155724; /* Dark green text */
+  padding: 15px; /* Add padding for spacing */
+  border: 1px solid #c3e6cb; /* Light green border */
+  border-radius: 5px; /* Rounded corners */
+  margin: 10px 0; /* Margin around the notification */
+  display: flex; /* Use flexbox to align items */
+  align-items: center; /* Center items vertically */
+  transition: opacity 0.5s ease; /* Fade in/out effect */
+}
+
+.notification-icon {
+  margin-right: 10px; /* Space between icon and text */
+  font-size: 20px; /* Increase icon size */
+}
+
+.notification.fade-in {
+  opacity: 1; /* Fully visible */
+}
+
+.notification.fade-out {
+  opacity: 0; /* Faded out */
+}
