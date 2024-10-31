@@ -47,14 +47,14 @@ const InstructorDashboard = () => {
 
   const handleImportCsv = async () => {
     if (csvData) {
+      console.log(csvData);
       const newUsers = csvData.map(row => ({
-        email: row.Email,
-        name: row.Name,
-        team_id: row.TeamID,
-        role: 'Student',
+        email: row.email,
+        team_id: row.team_id,
       }));
+      
 
-      const { error } = await supabase.from('users').insert(newUsers);
+      const { error } = await supabase.from('students').upsert(newUsers);
       if (error) {
         console.error('Error importing users:', error);
       } else {
@@ -73,7 +73,6 @@ const InstructorDashboard = () => {
         setTeams(data);
         setNewTeamName('');
         setIsAddTeamModalOpen(false);
-        console.log(teams)
       }
     }
   };
