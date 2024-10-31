@@ -34,13 +34,15 @@ export const AuthProvider = ({ children }) => {
       if (currentUser) {
         // Fetch the role from the public.users table
         const fetchedRole = await fetchUserRole(currentUser.id);
-        setRole(fetchedRole);
-        // Navigate based on role
         if (fetchedRole === 'Student') {
           navigate('/student-dashboard');
+        } else if (fetchedRole.trim().toLowerCase() === 'Instructor'.trim().toLowerCase()) {
+          navigate('/instructor-dashboard'); // Navigate to instructor dashboard
         }
-      }
 
+        console.log("entered")
+      }
+    
       setLoading(false);
     };
 
