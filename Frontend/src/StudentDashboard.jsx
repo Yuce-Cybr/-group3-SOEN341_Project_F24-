@@ -5,36 +5,46 @@ import supabase from './supabase';
 import SidebarComponent from './SidebarComponent';
 import '../src/StudentDashboard.css';
 
-  const StudentDashboard = () => {
+const StudentDashboard = () => {
   const { user, role, logout } = useAuth();
-  const [team, setTeam] = useState(null);
+  const [teamId, setTeamId] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTeamData = async () => {
-      setLoading(true);
-      const { data: teamData, error: teamError } = await supabase
+      setLoading(true); // Start loading
+      const { data, error } = await supabase
         .from('students')
-        .select('*, members:students(email, team_id)')
-        .eq('team_id', user.team_id)
+        .select('team_id')
+        .eq('email', user.email)
         .single();
 
-      if (teamError) {
-        console.error('Error fetching team data:', teamError);
+      if (error) {
+        console.error('Error fetching team data:', error);
       } else {
-        setTeam(teamData);
-        setTeamMembers(teamData.members);
+        setTeamId(data.team_id); // Save team_id
+
+        // Fetch team members based on team_id
+        if (data.team_id) {
+          const { data: teamMembersData, error: teamMembersError } = await supabase
+            .from('students')
+            .select('email')
+            .eq('team_id', data.team_id);
+            console.log(teamMembersData);
+
+          if (teamMembersError) {
+            console.error('Error fetching team members:', teamMembersError);
+          } else {
+            setTeamMembers(teamMembersData); // Save team members
+          }
+        }
       }
-      setLoading(false);
+      setLoading(false); // Stop loading
     };
 
-    if (user.team_id) {
-      fetchTeamData();
-    } else {
-      setLoading(false);
-    }
-  }, [user.team_id]);
+    fetchTeamData();
+  }, [user.email]); // Depend on user.email to refetch if it changes
 
   if (!user || role !== 'Student') {
     return <Navigate to="/" />;
@@ -59,14 +69,18 @@ import '../src/StudentDashboard.css';
         <section className="team-info">
           {loading ? (
             <p>Loading team data...</p>
-          ) : team ? (
+          ) : teamId ? (
             <div>
-              <h3>Your Team: {team.team_id}</h3>
+              <h3>Your Team ID: {teamId}</h3>
               <h4>Team Members:</h4>
               <ul>
-                {teamMembers.map(member => (
-                  <li key={member.email}>{member.email}</li>
-                ))}
+                {teamMembers.length > 0 ? (
+                  teamMembers.map(member => (
+                    <li key={member.email}>{member.email}</li>
+                  ))
+                ) : (
+                  <li>No team members found.</li>
+                )}
               </ul>
             </div>
           ) : (
@@ -79,4 +93,5 @@ import '../src/StudentDashboard.css';
 };
 
 export default StudentDashboard;
+
 
