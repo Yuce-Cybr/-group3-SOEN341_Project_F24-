@@ -13,27 +13,33 @@ import '../src/StudentDashboard.css';
 
   useEffect(() => {
     const fetchTeamData = async () => {
-      setLoading(true);
-      const { data: teamData, error: teamError } = await supabase
+      //setLoading(true);
+      const { data, error} = await supabase
         .from('students')
-        .select('*, members:students(email, team_id)')
-        .eq('team_id', user.team_id)
+        .select()
+        .eq('email', user.email)
         .single();
-
-      if (teamError) {
-        console.error('Error fetching team data:', teamError);
+      if (error) {
+        console.error('Error fetching team data:', error);
       } else {
-        setTeam(teamData);
-        setTeamMembers(teamData.members);
+        setTeam(data.team_id);
+        console.log(data)
+        const { data2: teamMembers, error: teamMembersError } = await supabase
+        .from('students')
+        .select()
+        .eq('team_id', data.team_id)
+        //setTeamMembers(...teamMembers, teammate);
+        console.log(teamMembers)
+        //console.log(teamMembers)
       }
-      setLoading(false);
+      //setLoading(false);
     };
 
-    if (user.team_id) {
+    //if (user.team_id) {
       fetchTeamData();
-    } else {
-      setLoading(false);
-    }
+    //} else {
+      //setLoading(false);
+    //}
   }, [user.team_id]);
 
   if (!user || role !== 'Student') {
@@ -48,20 +54,18 @@ import '../src/StudentDashboard.css';
           <h2>Student Dashboard</h2>
           <button onClick={logout} className="logout-btn">Logout</button>
         </header>
-
+  
         <section className="profile-card">
           <h3>Your Profile</h3>
           <p><strong>Name:</strong> {user.name || "Student"}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Role:</strong> {role}</p>
         </section>
-
+  
         <section className="team-info">
-          {loading ? (
-            <p>Loading team data...</p>
-          ) : team ? (
+          {team ? (
             <div>
-              <h3>Your Team: {team.team_id}</h3>
+              <h3>Your Team: {team}</h3>
               <h4>Team Members:</h4>
               <ul>
                 {teamMembers.map(member => (
