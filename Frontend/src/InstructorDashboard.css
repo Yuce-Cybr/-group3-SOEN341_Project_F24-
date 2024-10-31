@@ -1,104 +1,128 @@
 .instructor-dashboard {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0 !important;  /* !important will override App.css */
-    padding: 20px;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0 !important;
+  border-radius: 10px;
+}
+
+h1 {
+  color: #2A00B7;
+  margin-bottom: 15px;
+}
+
+p {
+  color: #666;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.logout-button {
+  background-color: #FF4136;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #E03630;
+}
+
+.table-container {
+  margin: 20px 0;
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.student-table th, .student-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.student-table th {
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: bold;
+}
+
+.file-label {
+  font-weight: bold;
+  margin-right: 10px;
+  color: #2A00B7;
+}
+
+.file-input {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.upload-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.submit-button, .create-team-button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover, .create-team-button:hover {
+  background-color: #218838;
+}
+
+.error-message {
+  color: red;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.success-message {
+  color: green;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .instructor-dashboard {
+    padding: 15px;
   }
-  
-  h1 {
-    color: #2A00B7;
-  }
-  
-  p {
-    color: #666;
-  }
-  
-  .table-container {
-    margin: 20px 0;
-    overflow-x: auto;
-  }
-  
-  .student-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 1rem;
-  }
-  
+
   .student-table th, .student-table td {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    text-align: center;
+    padding: 10px;
   }
-  
-  .student-table th {
-    background-color: #f4f4f4;
-    color: #333;
+
+  .submit-button, .create-team-button, .logout-button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
   }
-  
-  .file-label {
-    font-weight: bold;
-    margin-right: 10px;
-    color: #2A00B7;
-  }
-  
-  .file-input {
-    margin-left: 10px;
-    cursor: pointer;
-  }
-  
-  .upload-form {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .submit-button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 10px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .submit-button:hover {
-    background-color: #218838;
-  }
-  
-  .error-message {
-    color: red;
-    margin: 10px 0;
-  }
-  
-  .success-message {
-    color: green;
-    margin: 10px 0;
-  }
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .logout-button {
-    background-color: #FF4136;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  .logout-button:hover {
-    background-color: #E03630;
-  }
-  
+}

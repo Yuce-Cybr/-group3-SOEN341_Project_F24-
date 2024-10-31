@@ -56,6 +56,21 @@ const InstructorDashboard = () => {
     }
   };
 
+  // Reset all teams for the instructor
+  const resetTeams = async () => {
+    const { error } = await supabase
+      .from('teams')
+      .delete()
+      .eq('instructor_id', user.id);
+
+    if (error) {
+      setFetchError('Error resetting teams');
+    } else {
+      setTeams([]); // Clear the local teams state
+      setSelectedTeam(null); // Deselect any team currently being edited
+    }
+  };
+
   const addStudentToTeam = async (teamId, studentId) => {
     const { error } = await supabase
       .from('team_students')
@@ -73,8 +88,6 @@ const InstructorDashboard = () => {
     }
   };
   
-  
-
   // Remove a student from the selected team
   const removeStudentFromTeam = async (teamId, studentId) => {
     const { error } = await supabase
@@ -117,6 +130,9 @@ const InstructorDashboard = () => {
 
       {/* Button to create a new team */}
       <button onClick={createTeam} className="create-team-button">Create Team</button>
+
+      {/* Button to reset all teams */}
+      <button onClick={resetTeams} className="reset-teams-button">Reset Teams</button>
 
       {/* List of teams */}
       <div className="team-list">
