@@ -1,0 +1,118 @@
+/* StudentDashboard.css */
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f8;
+  }
+  
+  .student-dashboard {
+    flex-grow: 1;
+    padding: 2rem;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  .logout-btn {
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .logout-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  .profile-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-card h3 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    color: #333333;
+  }
+  
+  .profile-card p {
+    font-size: 1rem;
+    color: #666666;
+    margin: 0.5rem 0;
+  }
+  
+  .team-info {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .team-info h3 {
+    font-size: 1.5rem;
+    color: #333333;
+    margin-bottom: 1rem;
+  }
+  
+  .team-info h4 {
+    font-size: 1.2rem;
+    color: #555555;
+    margin-bottom: 1rem;
+  }
+  
+  .team-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .team-info ul li {
+    font-size: 1rem;
+    color: #666666;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .team-info ul li:last-child {
+    border-bottom: none;
+  }
+  
+  p {
+    color: #555555;
+    font-size: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .student-dashboard {
+      padding: 1rem;
+    }
+  
+    .dashboard-header h2 {
+      font-size: 1.4rem;
+    }
+  
+    .profile-card, .team-info {
+      padding: 1rem;
+    }
+  }
+  
