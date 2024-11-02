@@ -17,6 +17,8 @@ const InstructorDashboard = () => {
   const [csvData, setCsvData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
 
+
+
   useEffect(() => {
     const fetchUsersAndTeams = async () => {
       setLoading(true);
@@ -124,6 +126,7 @@ const InstructorDashboard = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </section>
+
 
         <section className="users-table">
           {loading ? (
