@@ -19,6 +19,7 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     const fetchTeamData = async () => {
+
       setLoading(true);
       setError(null);
 
@@ -247,13 +248,16 @@ const StudentDashboard = () => {
         <section className="team-info">
           {loading ? (
             <p>Loading team data...</p>
+
           ) : error ? (
             <p>Error fetching data: {error}</p>
+
           ) : teamId ? (
             <div>
               <h3>Your Team ID: {teamId}</h3>
               <h4>Team Members:</h4>
               <ul>
+
                 {filteredTeamMembers.length > 0 ? (
                   filteredTeamMembers.map(member => (
                     <li key={member.email}>
@@ -270,6 +274,7 @@ const StudentDashboard = () => {
                           renderAssessmentForm(member.email)
                       ) : null}
                     </li>
+
                   ))
                 ) : (
                   <li>No team members found.</li>
@@ -285,14 +290,6 @@ const StudentDashboard = () => {
   );
 };
 
+
 export default StudentDashboard;
-
-
-
-
-
-
-
-
-
 
