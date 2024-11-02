@@ -1,27 +1,26 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import supabase from './supabase';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);  // Use `null` instead of `false`
+  const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();  // Initialize the navigate hook
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    // Function to fetch role from the public.users table
     const fetchUserRole = async (userId) => {
       const { data, error } = await supabase
         .from('users')
         .select('role')
         .eq('user_id', userId)
-        .single();  // Fetch the role for the current user
+        .single();
 
       if (error) {
         console.error('Error fetching user role:', error.message);
-        return null;
+        return null; // Consider also returning a default role if needed
       }
       
       return data?.role || null;
@@ -32,22 +31,21 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
 
       if (currentUser) {
-        // Fetch the role from the public.users table
         const fetchedRole = await fetchUserRole(currentUser.id);
         setRole(fetchedRole);
+
         // Navigate based on role
-        if (fetchedRole === 'Student') {
-          navigate('/student-dashboard');
+        if (fetchedRole) {
+          navigate(`/${fetchedRole.toLowerCase()}-dashboard`); // Dynamic routing based on role
         }
-        if (fetchedRole === 'Instructor') {
-          navigate('/instructor-dashboard');
-        }
+      } else {
+        // No user logged in, maybe redirect to login
+        navigate('/');
       }
 
       setLoading(false);
     };
 
-    // Get current session
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       handleSession(session);
@@ -55,7 +53,6 @@ export const AuthProvider = ({ children }) => {
 
     getSession();
 
-    // Listen to authentication state changes
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       handleSession(session);
     });
@@ -63,16 +60,18 @@ export const AuthProvider = ({ children }) => {
     return () => {
       if (authListener) authListener.subscription.unsubscribe();
     };
-  }, [navigate]);  // Add `navigate` to the dependency array
+  }, [navigate]); 
 
   const login = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
+      email,
+      password,
     });
+
     if (error) {
       throw new Error(error.message);
     }
+
     return data.user;
   };
 
@@ -80,10 +79,11 @@ export const AuthProvider = ({ children }) => {
     await supabase.auth.signOut();
     setUser(null);
     setRole(null);
+    navigate('/'); // Navigate to the login page after logout
   };
 
   if (loading) {
-    return <div>Loading...</div>;  // Show a loading spinner or message
+    return <div>Loading user data, please wait...</div>;  
   }
 
   return (
@@ -95,3 +95,5 @@ export const AuthProvider = ({ children }) => {
 
 // Custom hook for using AuthContext
 export const useAuth = () => useContext(AuthContext);
+
+
