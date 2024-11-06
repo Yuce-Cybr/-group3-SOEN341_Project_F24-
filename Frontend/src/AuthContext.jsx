@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import supabase from './supabase';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom'; // Add useLocation
 
 const AuthContext = createContext();
 
@@ -8,7 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const location = useLocation(); // Add this to check current route
 
   useEffect(() => {
     const fetchUserRole = async (userId) => {
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children }) => {
 
       if (error) {
         console.error('Error fetching user role:', error.message);
-        return null; // Consider also returning a default role if needed
+        return null;
       }
       
       return data?.role || null;
@@ -34,13 +35,15 @@ export const AuthProvider = ({ children }) => {
         const fetchedRole = await fetchUserRole(currentUser.id);
         setRole(fetchedRole);
 
-        // Navigate based on role
         if (fetchedRole) {
-          navigate(`/${fetchedRole.toLowerCase()}-dashboard`); // Dynamic routing based on role
+          navigate(`/${fetchedRole.toLowerCase()}-dashboard`);
         }
       } else {
-        // No user logged in, maybe redirect to login
-        navigate('/');
+        // Only redirect to login if we're not on the signup page
+        const publicRoutes = ['/signup', '/']; // Add any other public routes here
+        if (!publicRoutes.includes(location.pathname)) {
+          navigate('/');
+        }
       }
 
       setLoading(false);
@@ -60,7 +63,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       if (authListener) authListener.subscription.unsubscribe();
     };
-  }, [navigate]); 
+  }, [navigate, location.pathname]); // Add location.pathname to dependencies
 
   const login = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
