@@ -3,48 +3,49 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger the workflow on push to the 'main' branch
+      - main  # Or the branch you are working with
   pull_request:
     branches:
-      - main  # Trigger the workflow on pull requests targeting the 'main' branch
+      - main  # Trigger workflow on pull requests targeting main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # This sets up a Linux environment for the build
-    
+    runs-on: ubuntu-latest
+
     steps:
-    # Step 1: Checkout the repository code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Step 2: Set up Node.js environment
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'  # Define the Node.js version to use
+      # Set up Node.js (make sure the version matches your project)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Update the Node.js version if needed
 
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: |
-        npm install  # Or use yarn install if you're using Yarn
+      # Navigate to the 'frontend' directory and install dependencies
+      - name: Install dependencies
+        run: |
+          cd frontend  # Navigate to the 'frontend' folder
+          npm install  # Install the dependencies defined in 'frontend/package.json'
 
-    # Step 4: Run tests (unit tests, linting, etc.)
-    - name: Run tests
-      run: |
-        npm test  # Adjust if you are using other testing tools
+      # Run tests (if applicable)
+      - name: Run tests
+        run: |
+          cd frontend  # Navigate to the 'frontend' folder again
+          npm test  # Run the tests
 
-    # Step 5: Build the project
-    - name: Build the project
-      run: |
-        npm run build  # Or yarn build if you're using Yarn
+      # Build the project
+      - name: Build the project
+        run: |
+          cd frontend  # Navigate to the 'frontend' folder
+          npm run build  # Build the project
 
-    # Step 6: Deploy the application (Deploy to Netlify as an example)
-    - name: Deploy to Netlify
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}  # Store your Netlify Auth Token in GitHub Secrets
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}  # Store your Site ID in GitHub Secrets
-      run: |
-        npm install netlify-cli -g  # Install the Netlify CLI tool
-        netlify deploy --prod --dir=build  # Deploy the build directory
+      # Optionally deploy or run any other steps needed for CD
+      # - name: Deploy to production
+      #   run: |
+      #     # Your deployment script here
+
+
 
 
