@@ -1,0 +1,50 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the 'main' branch
+  pull_request:
+    branches:
+      - main  # Trigger the workflow on pull requests targeting the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # This sets up a Linux environment for the build
+    
+    steps:
+    # Step 1: Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Node.js environment
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Define the Node.js version to use
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: |
+        npm install  # Or use yarn install if you're using Yarn
+
+    # Step 4: Run tests (unit tests, linting, etc.)
+    - name: Run tests
+      run: |
+        npm test  # Adjust if you are using other testing tools
+
+    # Step 5: Build the project
+    - name: Build the project
+      run: |
+        npm run build  # Or yarn build if you're using Yarn
+
+    # Step 6: Deploy the application (Deploy to Netlify as an example)
+    - name: Deploy to Netlify
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}  # Store your Netlify Auth Token in GitHub Secrets
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}  # Store your Site ID in GitHub Secrets
+      run: |
+        npm install netlify-cli -g  # Install the Netlify CLI tool
+        netlify deploy --prod --dir=build  # Deploy the build directory
+
+
