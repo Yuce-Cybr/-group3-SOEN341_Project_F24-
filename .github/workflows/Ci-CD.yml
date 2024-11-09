@@ -1,0 +1,59 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Debugging step to list directory contents (ensure 'Frontend' folder exists)
+      - name: List directory contents for debugging
+        run: |
+          echo "Listing the root directory:"
+          ls -alh
+          echo "Listing the Frontend directory contents:"
+          ls -alh Frontend
+
+      # Cache npm dependencies
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: Frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('Frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Navigate to the 'Frontend' directory and install dependencies
+      - name: Install dependencies
+        run: |
+          cd Frontend
+          npm install
+
+      # Run tests
+      - name: Run tests
+        run: |
+          cd Frontend
+          npm test
+
+      # Build the project
+      - name: Build the project
+        run: |
+          cd Frontend
+          npm run build
