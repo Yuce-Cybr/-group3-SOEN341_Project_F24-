@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // Ensure this is present at the top
 import { render } from '@testing-library/react';
 import App from './App';
 import { AuthProvider } from './AuthContext';
