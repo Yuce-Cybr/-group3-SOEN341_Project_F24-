@@ -2,7 +2,7 @@
 
 ## Project Description
 
-This project consists of creating a peer assessment system meant to be used for university team projects. This system will allow students to anonymously evaluate their peers  on four aspects: cooperation, conceptual contribution, practical contribution, and work ethic. This will allow students to provide and receive constructive feedback on their work and will also be monitored by the instructor. This will keep the students accountable of working on a project and encourage them to fulfill their part within the team.
+This project aims to create a peer assessment system tailored for university team projects. The system will enable students to anonymously evaluate their peers across four key dimensions: cooperation, conceptual contribution, practical contribution, and work ethic. Through this feedback mechanism, students will have the opportunity to provide and receive constructive evaluations on their teamwork performance. Additionally, instructors will oversee the system to ensure fair and accountable participation from all team members, fostering a collaborative and responsible work environment.
 
 ## Team Members:
 - **Mridul**
