@@ -5,14 +5,21 @@ import "./SidebarComponent.css";
 const SidebarComponent = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
     <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="toggle-button"
-      >
-        {isCollapsed ? "Expand" : "Collapse"}
-      </button>
+      {/* Toggle Arrow Button */}
+      <div className="toggle-container">
+        <button
+          onClick={toggleSidebar}
+          className="toggle-button"
+        >
+          {isCollapsed ? "▶" : "◁"} {/* Right Arrow when collapsed, Left Arrow when expanded */}
+        </button>
+      </div>
 
       <nav className="sidebar-nav">
         <ul>
@@ -29,7 +36,7 @@ const SidebarComponent = () => {
             </Link>
           </li>
           <li>
-            <Link to="/team-evaluation"> {/* Link to TeamEvaluation */}
+            <Link to="/team-evaluation">
               <span className="icon">👥</span>
               {!isCollapsed && <span className="text">Team Management</span>}
             </Link>

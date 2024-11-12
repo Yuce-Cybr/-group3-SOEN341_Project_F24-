@@ -1,83 +1,97 @@
+/* Sidebar Styling */
 .sidebar {
-  width: 200px;
-  background-color: #42006c;
+  width: 250px; /* Expanded sidebar width */
+  background-color: #4a695d; /* Sage green to match the overall theme */
   color: #fff;
   padding: 20px;
   transition: width 0.3s ease;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
   display: flex;
   flex-direction: column;
   height: 100vh;
-  border-radius: 4px;
+  border-radius: 8px; /* Rounded corners for a smoother look */
+  position: relative;
 }
 
+/* Sidebar when collapsed */
 .sidebar.collapsed {
-  width: 60px;
+  width: 60px; /* Collapsed width */
   align-items: center;
   padding: 20px 10px;
 }
 
+/* Arrow Button Styling */
+.toggle-container {
+  position: absolute;
+  top: 20px;
+  left: 10px; /* Positioned inside the sidebar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
 .toggle-button {
-  background-color: #2a00b7;
+  background-color: transparent;
   color: #fff;
   border: none;
-  padding: 10px;
-  cursor: pointer;
-  width: 100%;
-  border-radius: 4px;
-  margin-bottom: 20px;
-  font-size: 1rem;
+  font-size: 1.5rem; /* Adjust size for visibility */
   font-weight: bold;
   transition: background-color 0.3s;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .toggle-button:hover {
-  background-color: #3b0090;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Sidebar Navigation */
 .sidebar-nav ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
+/* Sidebar Navigation Item Styling */
 .sidebar-nav ul li {
   display: flex;
   align-items: center;
   padding: 12px 0;
   margin: 5px 0;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  border-radius: 8px; /* Rounded corners for items */
+  transition: background-color 0.3s ease;
   cursor: pointer;
 }
 
 .sidebar-nav ul li:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1); /* Soft hover effect */
 }
 
+/* Icon Styling */
 .sidebar-nav ul li .icon {
   font-size: 1.5rem;
   margin-right: 15px;
 }
 
+/* Text Styling for Navigation Items */
 .sidebar-nav ul li .text {
   font-size: 1rem;
   color: #f5f5f5;
   font-weight: 500;
   white-space: nowrap;
+  transition: color 0.3s ease;
 }
 
+/* Hide Text when Collapsed */
 .sidebar.collapsed .text {
   display: none;
 }
 
-.sidebar-nav ul li .icon, 
-.sidebar-nav ul li .text {
-  transition: color 0.3s;
-}
-
+/* Update Icon Size when Collapsed */
 .sidebar.collapsed .icon {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.8rem; /* Larger icon for collapsed state */
 }
-
