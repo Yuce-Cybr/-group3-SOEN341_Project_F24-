@@ -1,16 +1,45 @@
-/* StudentDashboard.css */
-
+/* Dashboard Container */
 .dashboard-container {
   display: flex;
   min-height: 100vh;
   background-color: #f4f6f8;
 }
 
+/* Sidebar Styling */
+.sidebar {
+  width: 250px; /* Set a fixed width for sidebar */
+  background-color: #4a695d; /* Sage green background */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: fixed; /* Fixed position so it doesn't scroll */
+  height: 100vh; /* Full height */
+  z-index: 2; /* Ensure sidebar stays above main content */
+}
+
+/* Sidebar Links */
+.sidebar a {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.sidebar a:hover {
+  background-color: #3b5548;
+}
+
+/* Adjust Main Content to Avoid Overlap */
 .student-dashboard {
+  margin-left: 250px; /* Offset main content by sidebar width */
   flex-grow: 1;
   padding: 2rem;
 }
 
+/* Dashboard Header */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -29,17 +58,18 @@
 
 .logout-btn {
   background-color: #ff4081;
-color: white;
-padding: 8px 16px;
-border: none;
-border-radius: 4px;
-cursor: pointer;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .logout-btn:hover {
   background-color: #c0392b;
 }
 
+/* Profile Card Styling */
 .profile-card {
   background-color: #ffffff;
   border-radius: 8px;
@@ -60,6 +90,7 @@ cursor: pointer;
   margin: 0.5rem 0;
 }
 
+/* Team Info Section */
 .team-info {
   background-color: #ffffff;
   border-radius: 8px;
@@ -101,19 +132,7 @@ p {
   font-size: 1rem;
 }
 
-@media (max-width: 768px) {
-  .student-dashboard {
-    padding: 1rem;
-  }
-
-  .dashboard-header h2 {
-    font-size: 1.4rem;
-  }
-
-  .profile-card, .team-info {
-    padding: 1rem;
-  }
-}
+/* Notification Styling */
 .notification {
   background-color: #d4edda; /* Light green background */
   color: #155724; /* Dark green text */
@@ -138,3 +157,26 @@ p {
 .notification.fade-out {
   opacity: 0; /* Faded out */
 }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative; /* Sidebar becomes inline with content */
+    width: 100%; /* Full width */
+    height: auto; /* Allow height to adjust */
+  }
+
+  .student-dashboard {
+    margin-left: 0; /* Remove margin on smaller screens */
+    padding: 1rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .profile-card, .team-info {
+    padding: 1rem;
+  }
+}
+
