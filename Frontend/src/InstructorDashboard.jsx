@@ -16,6 +16,13 @@ const InstructorDashboard = () => {
   const [newTeamName, setNewTeamName] = useState('');
   const [csvData, setCsvData] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isSummaryViewOpen, setIsSummaryViewOpen] = useState(false);
+  const [isDetailedViewOpen, setIsDetailedViewOpen] = useState(false);
+
+  const openSummaryView = () => setIsSummaryViewOpen(true);
+  const closeSummaryView = () => setIsSummaryViewOpen(false);
+  const openDetailedView = () => setIsDetailedViewOpen(true);
+  const closeDetailedView = () => setIsDetailedViewOpen(false);
 
   useEffect(() => {
     const fetchUsersAndTeams = async () => {
@@ -53,7 +60,6 @@ const InstructorDashboard = () => {
         team_id: row.team_id,
       }));
       
-
       const { error } = await supabase.from('students').upsert(newUsers);
       if (error) {
         console.error('Error importing users:', error);
@@ -114,6 +120,8 @@ const InstructorDashboard = () => {
           <input type="file" accept=".csv" onChange={handleCsvUpload} />
           <button onClick={handleImportCsv} disabled={!csvData}>Import CSV</button>
           <button onClick={() => setIsAddTeamModalOpen(true)}>Add Team</button>
+          <button onClick={openSummaryView}>Summary View</button>
+          <button onClick={openDetailedView}>Detailed View</button>
         </section>
 
         <section className="search-bar">
@@ -188,12 +196,109 @@ const InstructorDashboard = () => {
             <button onClick={() => setSelectedUser(null)} className="close-btn">Close</button>
           </div>
         )}
+
+        {isSummaryViewOpen && (
+          <SummaryViewModal onClose={closeSummaryView} />
+        )}
+
+        {isDetailedViewOpen && (
+          <DetailedViewModal onClose={closeDetailedView} />
+        )}
       </div>
     </div>
   );
 };
 
+const SummaryViewModal = ({ onClose }) => (
+  <div className="modal">
+    <div className="modal-content summary-view">
+      <h3>Summary of Results View</h3>
+      
+      <table className="styled-table">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Team</th>
+            <th>Cooperation</th>
+            <th>Conceptual Contribution</th>
+            <th>Practical Contribution</th>
+            <th>Work Ethic</th>
+            <th>Average</th>
+            <th>Peers who Responded</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Example row, replace with dynamic data */}
+          <tr>
+            <td>402XXX</td>
+            <td>Doe</td>
+            <td>John</td>
+            <td>Invincibles</td>
+            <td>6.4</td>
+            <td>6.4</td>
+            <td>6.8</td>
+            <td>6.8</td>
+            <td>6.6</td>
+            <td>5</td>
+          </tr>
+          {/* Additional rows as necessary */}
+        </tbody>
+      </table>
+      
+      <button onClick={onClose} className="close-btn">Close</button>
+    </div>
+  </div>
+);
+
+
+const DetailedViewModal = ({ onClose }) => (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Detailed View</h3>
+      <p><strong>Team Name:</strong> ...</p>
+      <p><strong>Student Name:</strong> ...</p>
+      
+      <table className="styled-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Cooperation</th>
+            <th>Conceptual</th>
+            <th>Practical</th>
+            <th>Work Ethic</th>
+            <th>Average Across All</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Student 1</td>
+            <td>3</td>
+            <td>4</td>
+            <td>2</td>
+            <td>1</td>
+            <td>2.5</td>
+          </tr>
+          <tr>
+            <td>Student 2</td>
+            <td>5</td>
+            <td>3</td>
+            <td>3</td>
+            <td>5</td>
+            <td>4</td>
+          </tr>
+          {/* Additional rows as necessary */}
+        </tbody>
+      </table>
+
+      <h4>Comments:</h4>
+      <p><strong>Student 1 comment:</strong> XXXXXX</p>
+      <p><strong>Student 2 comment:</strong> XXXXXX</p>
+      
+      <button onClick={onClose} className="close-btn">Close</button>
+    </div>
+  </div>
+);
+
 export default InstructorDashboard;
-
-
-
