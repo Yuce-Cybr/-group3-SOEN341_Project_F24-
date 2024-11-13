@@ -18,10 +18,10 @@ The proposed peer assessment system addresses these challenges by enabling stude
   Responsible for task breakdowns and the creation of user stories. She ensures that the project is organized and that individual tasks are clearly defined. Mridul also takes meeting minutes and tracks team progress throughout the development cycle.
   
 - **Aryan**:
-  Collaborates with Mridul on task breakdowns and user story development. He contributes to organizing project workflows and ensuring that each phase is completed on time.
+  Collaborates with Mridul on task breakdowns and user story development. He contributes to organizing project workflows and ensuring that each phase is completed on time. He does the sprint planning to ensure the work is done in time.
 
 - **Paul**:
-  Manages the project’s GitHub repository and oversees the ReadMe documentation, ensuring that the project’s code is properly version-controlled and that documentation is clear and up to date. He helps in sprint planning to coordinate team efforts and some user stories. He also helps in sprint planning to coordinate team efforts. He also helped with the back-end side of the code (and also sometimes resolves some front-end problems).
+  Manages the project’s GitHub repository and oversees the ReadMe documentation, ensuring that the project’s code is properly version-controlled and that documentation is clear and up to date. He helps in sprint planning to coordinate team efforts and some user stories. He also helped with the back-end side of the code (and also sometimes resolves some front-end problems).
 
 - **Sitherankan**:
   Works alongside Paul to manage the GitHub repository and maintain the ReadMe documentation. He assists in sprint planning and coordinates team tasks to ensure alignment with project goals. He also helped with the front-end developpement and worked on testing (and also CICD).
