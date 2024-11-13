@@ -24,7 +24,7 @@ The proposed peer assessment system addresses these challenges by enabling stude
   Manages the project’s GitHub repository and oversees the ReadMe documentation, ensuring that the project’s code is properly version-controlled and that documentation is clear and up to date. He helps in sprint planning to coordinate team efforts and some user stories. He also helps in sprint planning to coordinate team efforts. He also helped with the back-end side of the code (and also sometimes resolves some front-end problems).
 
 - **Sitherankan**:
-  Works alongside Paul to manage the GitHub repository and maintain the ReadMe documentation. He assists in sprint planning and coordinates team tasks to ensure alignment with project goals.
+  Works alongside Paul to manage the GitHub repository and maintain the ReadMe documentation. He assists in sprint planning and coordinates team tasks to ensure alignment with project goals. He also helped with the front-end developpement and worked on testing (and also CICD).
 
 - **Youssef**:
   Youssef is responsible for the front-end development, ensuring that the user interface is functional, intuitive, and meets the project’s design specifications.
