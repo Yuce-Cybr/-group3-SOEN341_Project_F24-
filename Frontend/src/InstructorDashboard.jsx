@@ -209,58 +209,93 @@ const InstructorDashboard = () => {
   );
 };
 
-const SummaryViewModal = ({ onClose }) => (
-  <div className="modal">
-    <div className="modal-content summary-view">
-      <h3>Summary of Results View</h3>
-      
-      <table className="styled-table">
+const SummaryViewModal = ({ onClose }) => {
+  const [summaryData, setSummaryData] = useState([]);
+
+  useEffect(() => {
+    const fetchSummaryData = async () => {
+      const { data, error } = await supabase
+        .from('Assessments')
+        .select('Accessed_Email, Ratings')
+        .not('Ratings', 'is', null); // Fetch only records with ratings
+
+      if (error) {
+        console.error("Error fetching summary data:", error);
+      } else {
+        // Calculate averages for each student
+        const formattedData = data.map((assessment) => {
+          const ratings = assessment.Ratings;
+          const average =
+            (ratings.cooperation +
+              ratings.conceptualContribution +
+              ratings.practicalContribution +
+              ratings.workEthic) / 4;
+
+          return { ...assessment, average };
+        });
+        setSummaryData(formattedData);
+      }
+    };
+
+    fetchSummaryData();
+  }, []);
+
+  return (
+    <div className="modal">
+      <h2>Summary of Results View</h2>
+      <table>
         <thead>
           <tr>
-            <th>Student ID</th>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Team</th>
+            <th>Accessed Email</th>
             <th>Cooperation</th>
             <th>Conceptual Contribution</th>
             <th>Practical Contribution</th>
             <th>Work Ethic</th>
             <th>Average</th>
-            <th>Peers who Responded</th>
           </tr>
         </thead>
         <tbody>
-          {/* Example row, replace with dynamic data */}
-          <tr>
-            <td>402XXX</td>
-            <td>Doe</td>
-            <td>John</td>
-            <td>Invincibles</td>
-            <td>6.4</td>
-            <td>6.4</td>
-            <td>6.8</td>
-            <td>6.8</td>
-            <td>6.6</td>
-            <td>5</td>
-          </tr>
-          {/* Additional rows as necessary */}
+          {summaryData.map((student, index) => (
+            <tr key={index}>
+              <td>{student.Accessed_Email}</td>
+              <td>{student.Ratings.cooperation}</td>
+              <td>{student.Ratings.conceptualContribution}</td>
+              <td>{student.Ratings.practicalContribution}</td>
+              <td>{student.Ratings.workEthic}</td>
+              <td>{student.average.toFixed(2)}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
-      
-      <button onClick={onClose} className="close-btn">Close</button>
+      <button onClick={onClose}>Close</button>
     </div>
-  </div>
-);
+  );
+};
 
+const DetailedViewModal = ({ studentEmail, onClose }) => {
+  const [detailedData, setDetailedData] = useState([]);
 
-const DetailedViewModal = ({ onClose }) => (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>Detailed View</h3>
-      <p><strong>Team Name:</strong> ...</p>
-      <p><strong>Student Name:</strong> ...</p>
-      
-      <table className="styled-table">
+  useEffect(() => {
+    const fetchDetailedData = async () => {
+      const { data, error } = await supabase
+        .from('Assessments')
+        .select('Ratings, Comments')
+        .eq('Accessed_Email', studentEmail);
+
+      if (error) {
+        console.error("Error fetching detailed data:", error);
+      } else {
+        setDetailedData(data);
+      }
+    };
+
+    fetchDetailedData();
+  }, [studentEmail]);
+
+  return (
+    <div className="modal">
+      <h2>Detailed View for {studentEmail}</h2>
+      <table>
         <thead>
           <tr>
             <th>Member</th>
@@ -272,33 +307,41 @@ const DetailedViewModal = ({ onClose }) => (
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Student 1</td>
-            <td>3</td>
-            <td>4</td>
-            <td>2</td>
-            <td>1</td>
-            <td>2.5</td>
-          </tr>
-          <tr>
-            <td>Student 2</td>
-            <td>5</td>
-            <td>3</td>
-            <td>3</td>
-            <td>5</td>
-            <td>4</td>
-          </tr>
-          {/* Additional rows as necessary */}
+          {detailedData.map((entry, index) => {
+            const ratings = entry.Ratings;
+            const average =
+              (ratings.cooperation +
+                ratings.conceptualContribution +
+                ratings.practicalContribution +
+                ratings.workEthic) / 4;
+
+            return (
+              <tr key={index}>
+                <td>Student {index + 1}</td>
+                <td>{ratings.cooperation}</td>
+                <td>{ratings.conceptualContribution}</td>
+                <td>{ratings.practicalContribution}</td>
+                <td>{ratings.workEthic}</td>
+                <td>{average.toFixed(2)}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
-      <h4>Comments:</h4>
-      <p><strong>Student 1 comment:</strong> XXXXXX</p>
-      <p><strong>Student 2 comment:</strong> XXXXXX</p>
-      
-      <button onClick={onClose} className="close-btn">Close</button>
+      <div>
+        <h3>Comments:</h3>
+        {detailedData.map((entry, index) => (
+          <p key={index}>
+            <strong>Student {index + 1} comment:</strong> {entry.Comments.cooperation}
+          </p>
+        ))}
+      </div>
+
+      <button onClick={onClose}>Close</button>
     </div>
-  </div>
-);
+  );
+};
+
 
 export default InstructorDashboard;
