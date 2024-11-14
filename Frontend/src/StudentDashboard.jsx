@@ -12,9 +12,11 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [assessments, setAssessments] = useState({});
-  const [submitted, setSubmitted] = useState({}); // Tracks submissions
-  const [selectedMember, setSelectedMember] = useState(null); // State for selected member
-  const [submissionNotification, setSubmissionNotification] = useState(null); // Notification state
+  const [submitted, setSubmitted] = useState({});
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [submissionNotification, setSubmissionNotification] = useState(null);
+  const [completedAssessments, setCompletedAssessments] = useState(0);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,7 +44,7 @@ const StudentDashboard = () => {
           if (teamMembersError) throw teamMembersError;
 
           setTeamMembers(teamMembersData);
-          // Initialize assessments for each team member
+
           const initialAssessments = {};
           teamMembersData.forEach(member => {
             initialAssessments[member.email] = {
@@ -61,6 +63,7 @@ const StudentDashboard = () => {
             };
           });
           setAssessments(initialAssessments);
+          setCompletedAssessments(0);
         }
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -72,10 +75,6 @@ const StudentDashboard = () => {
 
     fetchTeamData();
   }, [user.email]);
-
-  if (!user || role !== 'Student') {
-    return <Navigate to="/" />;
-  }
 
   const handleLogout = async () => {
     await logout();
@@ -117,83 +116,38 @@ const StudentDashboard = () => {
       return;
     }
 
-    console.log(`Ratings submitted for ${memberEmail}:`, ratings);
-    console.log(`Comments submitted for ${memberEmail}:`, comments);
-    
-    // Set submitted state for this member
     setSubmitted((prevSubmitted) => ({
       ...prevSubmitted,
       [memberEmail]: true,
     }));
 
-    // Set submission notification
+    setCompletedAssessments(prev => prev + 1);
+
     setSubmissionNotification(`Assessment submitted for ${memberEmail}!`);
-    
-    // Clear notification after 3 seconds
     setTimeout(() => {
       setSubmissionNotification(null);
     }, 3000);
-
-    // Here you would typically send the ratings and comments to your backend/database
-    setSelectedMember(null); // Reset selected member after submission
+    setSelectedMember(null);
   };
 
-  const renderAssessmentForm = (memberEmail) => {
-    const { ratings, comments } = assessments[memberEmail];
+  const renderProgress = () => {
+    const totalMembers = teamMembers.length - 1;
+    const progressPercentage = (completedAssessments / totalMembers) * 100;
 
     return (
-      <div className="peer-assessment">
-        <header className="dashboard-header">
-          <h2>Peer Assessment for {memberEmail}</h2>
-        </header>
-        <p>Evaluate your teammate, {memberEmail}, on the following criteria.</p>
-
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(memberEmail); }} className="assessment-form">
-          {Object.keys(ratings).map((dimension, index) => (
-            <div key={index} className="assessment-section">
-              <label className="assessment-label">
-                {dimension
-                  .replace(/([A-Z])/g, ' $1')
-                  .replace(/^./, (str) => str.toUpperCase())}
-                :
-              </label>
-
-              <div className="rating">
-                {[1, 2, 3, 4, 5].map((num) => (
-                  <label key={num} className="rating-label">
-                    <input
-                      type="radio"
-                      name={dimension}
-                      value={num}
-                      checked={ratings[dimension] === num}
-                      onChange={() => handleRatingChange(memberEmail, dimension, num)}
-                      disabled={submitted[memberEmail]} // Disable ratings if already submitted
-                    />
-                    {num}
-                  </label>
-                ))}
-              </div>
-
-              <textarea
-                className="assessment-comment"
-                placeholder={`Comments on ${dimension.replace(/([A-Z])/g, ' $1').toLowerCase()} (optional)`}
-                value={comments[dimension]}
-                onChange={(e) => handleCommentChange(memberEmail, dimension, e.target.value)}
-                disabled={submitted[memberEmail]} // Disable comments if already submitted
-              />
-            </div>
-          ))}
-
-          <button type="submit" className="submit-button" disabled={submitted[memberEmail]}>
-            Submit Assessment
-          </button>
-        </form>
+      <div className="progress-container">
+        <p>Assessment Progress: {completedAssessments}/{totalMembers} completed</p>
+        <div className="progress-bar">
+          <div
+            className="progress-bar-filled"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
       </div>
     );
   };
 
   const handleMemberClick = (memberEmail) => {
-    // Toggle member form display
     setSelectedMember(selectedMember === memberEmail ? null : memberEmail);
   };
 
@@ -219,8 +173,56 @@ const StudentDashboard = () => {
     );
   };
 
-  // Filter out the logged-in user from the team members
-  const filteredTeamMembers = teamMembers.filter(member => member.email !== user.email);
+  const renderAssessmentForm = (memberEmail) => {
+    const { ratings, comments } = assessments[memberEmail];
+
+    return (
+      <div className="peer-assessment">
+        <header className="dashboard-header">
+          <h2>Peer Assessment for {memberEmail}</h2>
+        </header>
+        <p>Evaluate your teammate, {memberEmail}, on the following criteria.</p>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(memberEmail); }} className="assessment-form">
+          {Object.keys(ratings).map((dimension, index) => (
+            <div key={index} className="assessment-section">
+              <label className="assessment-label">
+                {dimension.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}:
+              </label>
+
+              <div className="rating">
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <label key={num} className="rating-label">
+                    <input
+                      type="radio"
+                      name={dimension}
+                      value={num}
+                      checked={ratings[dimension] === num}
+                      onChange={() => handleRatingChange(memberEmail, dimension, num)}
+                      disabled={submitted[memberEmail]}
+                    />
+                    {num}
+                  </label>
+                ))}
+              </div>
+
+              <textarea
+                className="assessment-comment"
+                placeholder={`Comments on ${dimension.replace(/([A-Z])/g, ' $1').toLowerCase()} (optional)`}
+                value={comments[dimension]}
+                onChange={(e) => handleCommentChange(memberEmail, dimension, e.target.value)}
+                disabled={submitted[memberEmail]}
+              />
+            </div>
+          ))}
+
+          <button type="submit" className="submit-button" disabled={submitted[memberEmail]}>
+            Submit Assessment
+          </button>
+        </form>
+      </div>
+    );
+  };
 
   return (
     <div className="dashboard-container">
@@ -238,6 +240,8 @@ const StudentDashboard = () => {
           <p><strong>Role:</strong> {role}</p>
         </section>
 
+        {renderProgress()}
+
         {submissionNotification && (
           <div className="notification">
             {submissionNotification}
@@ -254,26 +258,21 @@ const StudentDashboard = () => {
               <h3>Your Team ID: {teamId}</h3>
               <h4>Team Members:</h4>
               <ul>
-                {filteredTeamMembers.length > 0 ? (
-                  filteredTeamMembers.map(member => (
-                    <li key={member.email}>
-                      <span 
-                        onClick={() => handleMemberClick(member.email)} 
-                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-                      >
-                        {member.email}
-                      </span>
-                      {/* Render the Peer Assessment Form for the selected member or review assessment if submitted */}
-                      {selectedMember === member.email ? (
-                        submitted[member.email] ? 
-                          renderSubmittedAssessment(member.email) :
-                          renderAssessmentForm(member.email)
-                      ) : null}
-                    </li>
-                  ))
-                ) : (
-                  <li>No team members found.</li>
-                )}
+                {teamMembers.filter(member => member.email !== user.email).map(member => (
+                  <li key={member.email}>
+                    <span 
+                      onClick={() => handleMemberClick(member.email)} 
+                      style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                    >
+                      {member.email}
+                    </span>
+                    {selectedMember === member.email ? (
+                      submitted[member.email] ? 
+                        renderSubmittedAssessment(member.email) :
+                        renderAssessmentForm(member.email)
+                    ) : null}
+                  </li>
+                ))}
               </ul>
             </div>
           ) : (
@@ -286,13 +285,3 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
-
-
-
-
-
-
-
-
-
-
