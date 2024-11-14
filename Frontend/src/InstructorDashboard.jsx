@@ -272,30 +272,15 @@ const SummaryViewModal = ({ onClose }) => {
   );
 };
 
-const DetailedViewModal = ({ studentEmail, onClose }) => {
-  const [detailedData, setDetailedData] = useState([]);
 
-  useEffect(() => {
-    const fetchDetailedData = async () => {
-      const { data, error } = await supabase
-        .from('Assessments')
-        .select('Ratings, Comments')
-        .eq('Accessed_Email', studentEmail);
-
-      if (error) {
-        console.error("Error fetching detailed data:", error);
-      } else {
-        setDetailedData(data);
-      }
-    };
-
-    fetchDetailedData();
-  }, [studentEmail]);
-
-  return (
-    <div className="modal">
-      <h2>Detailed View for {studentEmail}</h2>
-      <table>
+const DetailedViewModal = ({ onClose }) => (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Detailed View</h3>
+      <p><strong>Team Name:</strong> ...</p>
+      <p><strong>Student Name:</strong> ...</p>
+      
+      <table className="styled-table">
         <thead>
           <tr>
             <th>Member</th>
@@ -307,41 +292,33 @@ const DetailedViewModal = ({ studentEmail, onClose }) => {
           </tr>
         </thead>
         <tbody>
-          {detailedData.map((entry, index) => {
-            const ratings = entry.Ratings;
-            const average =
-              (ratings.cooperation +
-                ratings.conceptualContribution +
-                ratings.practicalContribution +
-                ratings.workEthic) / 4;
-
-            return (
-              <tr key={index}>
-                <td>Student {index + 1}</td>
-                <td>{ratings.cooperation}</td>
-                <td>{ratings.conceptualContribution}</td>
-                <td>{ratings.practicalContribution}</td>
-                <td>{ratings.workEthic}</td>
-                <td>{average.toFixed(2)}</td>
-              </tr>
-            );
-          })}
+          <tr>
+            <td>Student 1</td>
+            <td>3</td>
+            <td>4</td>
+            <td>2</td>
+            <td>1</td>
+            <td>2.5</td>
+          </tr>
+          <tr>
+            <td>Student 2</td>
+            <td>5</td>
+            <td>3</td>
+            <td>3</td>
+            <td>5</td>
+            <td>4</td>
+          </tr>
+          {/* Additional rows as necessary */}
         </tbody>
       </table>
 
-      <div>
-        <h3>Comments:</h3>
-        {detailedData.map((entry, index) => (
-          <p key={index}>
-            <strong>Student {index + 1} comment:</strong> {entry.Comments.cooperation}
-          </p>
-        ))}
-      </div>
-
-      <button onClick={onClose}>Close</button>
+      <h4>Comments:</h4>
+      <p><strong>Student 1 comment:</strong> XXXXXX</p>
+      <p><strong>Student 2 comment:</strong> XXXXXX</p>
+      
+      <button onClick={onClose} className="close-btn">Close</button>
     </div>
-  );
-};
-
+  </div>
+);
 
 export default InstructorDashboard;
