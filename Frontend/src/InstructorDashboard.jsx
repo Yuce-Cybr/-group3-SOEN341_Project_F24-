@@ -246,7 +246,7 @@ const SummaryViewModal = ({ onClose }) => {
       <table>
         <thead>
           <tr>
-            <th>Accessed Email</th>
+            <th>Memeber id</th>
             <th>Cooperation</th>
             <th>Conceptual Contribution</th>
             <th>Practical Contribution</th>
