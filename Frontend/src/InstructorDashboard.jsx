@@ -273,44 +273,50 @@ const SummaryViewModal = ({ onClose }) => {
     </div>
   );
 };
-
 const DetailedViewModal = ({ onClose }) => {
-  const [assessmentData, setAssessmentData] = useState({});
+  const [detailedData, setDetailedData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAssessmentData = async () => {
+    const fetchDetailedData = async () => {
       const { data, error } = await supabase
         .from('Assessments')
         .select('Accessed_email, Accessor_Email, Ratings, Comments');
 
       if (error) {
-        console.error("Error fetching assessment data:", error);
+        console.error("Error fetching detailed data:", error);
       } else {
-        console.log("Fetched data:", data); // Log fetched data to verify
+        console.log("Fetched data:", data); // Log the fetched data to verify it
 
-        const groupedData = data.reduce((acc, assessment) => {
-          const { Accessed_email } = assessment;
-          if (!acc[Accessed_email]) acc[Accessed_email] = [];
-          const { cooperation, conceptualContribution, practicalContribution, workEthic } = assessment.Ratings;
-          const average = (
-            (cooperation + conceptualContribution + practicalContribution + workEthic) / 4
-          ).toFixed(2);
+        if (data && data.length > 0) {
+          // Group data by Accessed_email (each student's assessment)
+          const groupedData = data.reduce((acc, assessment) => {
+            const { Accessed_email } = assessment;
+            if (!acc[Accessed_email]) acc[Accessed_email] = [];
+            
+            // Calculate the average for each row of ratings
+            const { cooperation = 0, conceptualContribution = 0, practicalContribution = 0, workEthic = 0 } = assessment.Ratings || {};
+            const average = (
+              (cooperation + conceptualContribution + practicalContribution + workEthic) / 4
+            ).toFixed(2);
 
-          acc[Accessed_email].push({
-            ...assessment,
-            average,
-          });
+            acc[Accessed_email].push({
+              ...assessment,
+              average,
+            });
 
-          return acc;
-        }, {});
+            return acc;
+          }, {});
 
-        setAssessmentData(groupedData);
+          setDetailedData(groupedData);
+        } else {
+          console.warn("No data found in the 'Assessments' table.");
+        }
       }
       setLoading(false);
     };
 
-    fetchAssessmentData();
+    fetchDetailedData();
   }, []);
 
   if (loading) {
@@ -321,13 +327,15 @@ const DetailedViewModal = ({ onClose }) => {
     <div className="modal">
       <div className="modal-content">
         <h3>Detailed View</h3>
-        {Object.keys(assessmentData).length === 0 ? (
+        <p><strong>Team Name:</strong> 12</p>
+
+        {Object.keys(detailedData).length === 0 ? (
           <p>No data available.</p>
         ) : (
-          Object.keys(assessmentData).map((accessedEmail) => (
-            <div key={accessedEmail}>
+          Object.keys(detailedData).map((accessedEmail, tableIndex) => (
+            <div key={tableIndex}>
               <p><strong>Student Name:</strong> {accessedEmail}</p>
-              
+
               <table className="styled-table">
                 <thead>
                   <tr>
@@ -340,8 +348,8 @@ const DetailedViewModal = ({ onClose }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {assessmentData[accessedEmail].map((student, index) => (
-                    <tr key={index}>
+                  {detailedData[accessedEmail].map((student, rowIndex) => (
+                    <tr key={rowIndex}>
                       <td>{student.Accessor_Email}</td>
                       <td>{student.Ratings.cooperation}</td>
                       <td>{student.Ratings.conceptualContribution}</td>
@@ -354,11 +362,12 @@ const DetailedViewModal = ({ onClose }) => {
               </table>
 
               <h4>Comments:</h4>
-              {assessmentData[accessedEmail].map((student, index) => (
-                <p key={index}>
-                  <strong>{student.Accessor_Email} comment:</strong> {student.Comments || "No comments"}
+              {detailedData[accessedEmail].map((student, commentIndex) => (
+                <p key={commentIndex}>
+                  <strong>{student.Accessor_Email} comment:</strong> {student.Comments.cooperation || "No comments"}
                 </p>
               ))}
+              <p>...</p> {/* Add more hardcoded comments if needed */}
             </div>
           ))
         )}
@@ -367,6 +376,8 @@ const DetailedViewModal = ({ onClose }) => {
     </div>
   );
 };
+
+
 
 
 export default InstructorDashboard;
