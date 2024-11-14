@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "./AuthContext";
-import { Navigate, useNavigate } from "react-router-dom";
-import supabase from "./supabase";
-import SidebarComponent from "./SidebarComponent";
-import "../src/StudentDashboard.css";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from './AuthContext';
+import { Navigate, useNavigate } from 'react-router-dom';
+import supabase from './supabase';
+import SidebarComponent from './SidebarComponent';
+import '../src/StudentDashboard.css';
 
 const StudentDashboard = () => {
   const { user, role, logout } = useAuth();
@@ -15,6 +15,8 @@ const StudentDashboard = () => {
   const [submitted, setSubmitted] = useState({});
   const [selectedMember, setSelectedMember] = useState(null);
   const [submissionNotification, setSubmissionNotification] = useState(null);
+  const [completedAssessments, setCompletedAssessments] = useState(0);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,9 +26,9 @@ const StudentDashboard = () => {
 
       try {
         const { data, error: teamError } = await supabase
-          .from("students")
-          .select("team_id")
-          .eq("email", user.email)
+          .from('students')
+          .select('team_id')
+          .eq('email', user.email)
           .single();
 
         if (teamError) throw teamError;
@@ -34,17 +36,17 @@ const StudentDashboard = () => {
         setTeamId(data.team_id);
 
         if (data.team_id) {
-          const { data: teamMembersData, error: teamMembersError } =
-            await supabase
-              .from("students")
-              .select("email")
-              .eq("team_id", data.team_id);
-
+          const { data: teamMembersData, error: teamMembersError } = await supabase
+            .from('students')
+            .select('email')
+            .eq('team_id', data.team_id);
+          
           if (teamMembersError) throw teamMembersError;
 
           setTeamMembers(teamMembersData);
+
           const initialAssessments = {};
-          teamMembersData.forEach((member) => {
+          teamMembersData.forEach(member => {
             initialAssessments[member.email] = {
               ratings: {
                 cooperation: 0,
@@ -53,17 +55,18 @@ const StudentDashboard = () => {
                 workEthic: 0,
               },
               comments: {
-                cooperation: "",
-                conceptualContribution: "",
-                practicalContribution: "",
-                workEthic: "",
+                cooperation: '',
+                conceptualContribution: '',
+                practicalContribution: '',
+                workEthic: '',
               },
             };
           });
           setAssessments(initialAssessments);
+          setCompletedAssessments(0);
         }
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error('Error fetching data:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -73,13 +76,9 @@ const StudentDashboard = () => {
     fetchTeamData();
   }, [user.email]);
 
-  if (!user || role !== "Student") {
-    return <Navigate to="/" />;
-  }
-
   const handleLogout = async () => {
     await logout();
-    navigate("/");
+    navigate('/');
   };
 
   const handleRatingChange = (memberEmail, dimension, value) => {
@@ -107,112 +106,43 @@ const StudentDashboard = () => {
       },
     }));
   };
-  const handleSubmit = async (memberEmail) => {
+
+  const handleSubmit = (memberEmail) => {
     const { ratings, comments } = assessments[memberEmail];
     const isValid = Object.values(ratings).every((rating) => rating > 0);
-
+    
     if (!isValid) {
       alert("Please rate all dimensions before submitting.");
       return;
     }
 
-    try {
-      const { error } = await supabase.from("Assessments").insert([
-        {
-          Accessor_Email: user.email,
-          Accessed_Email: memberEmail,
-          Ratings: ratings,
-          Comments: comments,
-          created_at: new Date(),
-        },
-      ]);
+    setSubmitted((prevSubmitted) => ({
+      ...prevSubmitted,
+      [memberEmail]: true,
+    }));
 
-      if (error) throw error;
+    setCompletedAssessments(prev => prev + 1);
 
-      setSubmitted((prevSubmitted) => ({
-        ...prevSubmitted,
-        [memberEmail]: true,
-      }));
-
-      setSubmissionNotification(`Assessment submitted for ${memberEmail}!`);
-
-      setTimeout(() => {
-        setSubmissionNotification(null);
-      }, 3000);
-
-      setSelectedMember(null);
-    } catch (err) {
-      console.error("Error submitting assessment:", err.message);
-      alert("There was an error submitting the assessment. Please try again.");
-    }
+    setSubmissionNotification(`Assessment submitted for ${memberEmail}!`);
+    setTimeout(() => {
+      setSubmissionNotification(null);
+    }, 3000);
+    setSelectedMember(null);
   };
 
-  const renderAssessmentForm = (memberEmail) => {
-    const { ratings, comments } = assessments[memberEmail];
+  const renderProgress = () => {
+    const totalMembers = teamMembers.length - 1;
+    const progressPercentage = (completedAssessments / totalMembers) * 100;
 
     return (
-      <div className="peer-assessment">
-        <header className="dashboard-header">
-          <h2>Peer Assessment for {memberEmail}</h2>
-        </header>
-        <p>Evaluate your teammate, {memberEmail}, on the following criteria.</p>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit(memberEmail);
-          }}
-          className="assessment-form"
-        >
-          {Object.keys(ratings).map((dimension, index) => (
-            <div key={index} className="assessment-section">
-              <label className="assessment-label">
-                {dimension
-                  .replace(/([A-Z])/g, " $1")
-                  .replace(/^./, (str) => str.toUpperCase())}
-                :
-              </label>
-
-              <div className="rating">
-                {[1, 2, 3, 4, 5].map((num) => (
-                  <label key={num} className="rating-label">
-                    <input
-                      type="radio"
-                      name={dimension}
-                      value={num}
-                      checked={ratings[dimension] === num}
-                      onChange={() =>
-                        handleRatingChange(memberEmail, dimension, num)
-                      }
-                      disabled={submitted[memberEmail]}
-                    />
-                    {num}
-                  </label>
-                ))}
-              </div>
-
-              <textarea
-                className="assessment-comment"
-                placeholder={`Comments on ${dimension
-                  .replace(/([A-Z])/g, " $1")
-                  .toLowerCase()} (optional)`}
-                value={comments[dimension]}
-                onChange={(e) =>
-                  handleCommentChange(memberEmail, dimension, e.target.value)
-                }
-                disabled={submitted[memberEmail]}
-              />
-            </div>
-          ))}
-
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={submitted[memberEmail]}
-          >
-            Submit Assessment
-          </button>
-        </form>
+      <div className="progress-container">
+        <p>Assessment Progress: {completedAssessments}/{totalMembers} completed</p>
+        <div className="progress-bar">
+          <div
+            className="progress-bar-filled"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
       </div>
     );
   };
@@ -233,11 +163,9 @@ const StudentDashboard = () => {
         <div className="submitted-assessment">
           {Object.keys(ratings).map((dimension, index) => (
             <div key={index} className="submitted-section">
-              <strong>{dimension.replace(/([A-Z])/g, " $1")}: </strong>
+              <strong>{dimension.replace(/([A-Z])/g, ' $1')}: </strong>
               <span>{ratings[dimension]}</span>
-              <p>
-                <em>Comments: {comments[dimension]}</em>
-              </p>
+              <p><em>Comments: {comments[dimension]}</em></p>
             </div>
           ))}
         </div>
@@ -245,9 +173,56 @@ const StudentDashboard = () => {
     );
   };
 
-  const filteredTeamMembers = teamMembers.filter(
-    (member) => member.email !== user.email
-  );
+  const renderAssessmentForm = (memberEmail) => {
+    const { ratings, comments } = assessments[memberEmail];
+
+    return (
+      <div className="peer-assessment">
+        <header className="dashboard-header">
+          <h2>Peer Assessment for {memberEmail}</h2>
+        </header>
+        <p>Evaluate your teammate, {memberEmail}, on the following criteria.</p>
+
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(memberEmail); }} className="assessment-form">
+          {Object.keys(ratings).map((dimension, index) => (
+            <div key={index} className="assessment-section">
+              <label className="assessment-label">
+                {dimension.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}:
+              </label>
+
+              <div className="rating">
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <label key={num} className="rating-label">
+                    <input
+                      type="radio"
+                      name={dimension}
+                      value={num}
+                      checked={ratings[dimension] === num}
+                      onChange={() => handleRatingChange(memberEmail, dimension, num)}
+                      disabled={submitted[memberEmail]}
+                    />
+                    {num}
+                  </label>
+                ))}
+              </div>
+
+              <textarea
+                className="assessment-comment"
+                placeholder={`Comments on ${dimension.replace(/([A-Z])/g, ' $1').toLowerCase()} (optional)`}
+                value={comments[dimension]}
+                onChange={(e) => handleCommentChange(memberEmail, dimension, e.target.value)}
+                disabled={submitted[memberEmail]}
+              />
+            </div>
+          ))}
+
+          <button type="submit" className="submit-button" disabled={submitted[memberEmail]}>
+            Submit Assessment
+          </button>
+        </form>
+      </div>
+    );
+  };
 
   return (
     <div className="dashboard-container">
@@ -255,26 +230,22 @@ const StudentDashboard = () => {
       <div className="student-dashboard">
         <header className="dashboard-header">
           <h2>Student Dashboard</h2>
-          <button onClick={handleLogout} className="logout-btn">
-            Logout
-          </button>
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
         </header>
 
         <section className="profile-card">
           <h3>Your Profile</h3>
-          <p>
-            <strong>Name:</strong> {user.name || "Student"}
-          </p>
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
-          <p>
-            <strong>Role:</strong> {role}
-          </p>
+          <p><strong>Name:</strong> {user.name || "Student"}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Role:</strong> {role}</p>
         </section>
 
+        {renderProgress()}
+
         {submissionNotification && (
-          <div className="notification">{submissionNotification}</div>
+          <div className="notification">
+            {submissionNotification}
+          </div>
         )}
 
         <section className="team-info">
@@ -287,29 +258,21 @@ const StudentDashboard = () => {
               <h3>Your Team ID: {teamId}</h3>
               <h4>Team Members:</h4>
               <ul>
-                {filteredTeamMembers.length > 0 ? (
-                  filteredTeamMembers.map((member) => (
-                    <li key={member.email}>
-                      <span
-                        onClick={() => handleMemberClick(member.email)}
-                        style={{
-                          cursor: "pointer",
-                          color: "blue",
-                          textDecoration: "underline",
-                        }}
-                      >
-                        {member.email}
-                      </span>
-                      {selectedMember === member.email
-                        ? submitted[member.email]
-                          ? renderSubmittedAssessment(member.email)
-                          : renderAssessmentForm(member.email)
-                        : null}
-                    </li>
-                  ))
-                ) : (
-                  <li>No team members found.</li>
-                )}
+                {teamMembers.filter(member => member.email !== user.email).map(member => (
+                  <li key={member.email}>
+                    <span 
+                      onClick={() => handleMemberClick(member.email)} 
+                      style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                    >
+                      {member.email}
+                    </span>
+                    {selectedMember === member.email ? (
+                      submitted[member.email] ? 
+                        renderSubmittedAssessment(member.email) :
+                        renderAssessmentForm(member.email)
+                    ) : null}
+                  </li>
+                ))}
               </ul>
             </div>
           ) : (
@@ -322,4 +285,3 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
-
