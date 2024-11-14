@@ -123,7 +123,7 @@ const StudentDashboard = () => {
 
     setCompletedAssessments(prev => prev + 1);
 
-    setSubmissionNotification(`Assessment submitted for ${memberEmail}!`);
+    setSubmissionNotification(`Assessment submitted for ${membercdEmail}!`);
     setTimeout(() => {
       setSubmissionNotification(null);
     }, 3000);
