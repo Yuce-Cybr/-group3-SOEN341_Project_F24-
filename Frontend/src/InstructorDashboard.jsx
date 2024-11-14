@@ -244,7 +244,7 @@ const SummaryViewModal = ({ onClose }) => {
     <div className="modal">
     <div className="modal-content summary-view">
       <h2>Summary of Results View</h2>
-      <table>
+      <table className="styled-table">
         <thead>
           <tr>
             <th>Memeber id</th>
@@ -274,53 +274,99 @@ const SummaryViewModal = ({ onClose }) => {
   );
 };
 
+const DetailedViewModal = ({ onClose }) => {
+  const [assessmentData, setAssessmentData] = useState({});
+  const [loading, setLoading] = useState(true);
 
-const DetailedViewModal = ({ onClose }) => (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>Detailed View</h3>
-      <p><strong>Team Name:</strong> ...</p>
-      <p><strong>Student Name:</strong> ...</p>
-      
-      <table className="styled-table">
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>Cooperation</th>
-            <th>Conceptual</th>
-            <th>Practical</th>
-            <th>Work Ethic</th>
-            <th>Average Across All</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Student 1</td>
-            <td>3</td>
-            <td>4</td>
-            <td>2</td>
-            <td>1</td>
-            <td>2.5</td>
-          </tr>
-          <tr>
-            <td>Student 2</td>
-            <td>5</td>
-            <td>3</td>
-            <td>3</td>
-            <td>5</td>
-            <td>4</td>
-          </tr>
-          {/* Additional rows as necessary */}
-        </tbody>
-      </table>
+  useEffect(() => {
+    const fetchAssessmentData = async () => {
+      const { data, error } = await supabase
+        .from('Assessments')
+        .select('Accessed_email, Accessor_Email, Ratings, Comments');
 
-      <h4>Comments:</h4>
-      <p><strong>Student 1 comment:</strong> XXXXXX</p>
-      <p><strong>Student 2 comment:</strong> XXXXXX</p>
-      
-      <button onClick={onClose} className="close-btn">Close</button>
+      if (error) {
+        console.error("Error fetching assessment data:", error);
+      } else {
+        console.log("Fetched data:", data); // Log fetched data to verify
+
+        const groupedData = data.reduce((acc, assessment) => {
+          const { Accessed_email } = assessment;
+          if (!acc[Accessed_email]) acc[Accessed_email] = [];
+          const { cooperation, conceptualContribution, practicalContribution, workEthic } = assessment.Ratings;
+          const average = (
+            (cooperation + conceptualContribution + practicalContribution + workEthic) / 4
+          ).toFixed(2);
+
+          acc[Accessed_email].push({
+            ...assessment,
+            average,
+          });
+
+          return acc;
+        }, {});
+
+        setAssessmentData(groupedData);
+      }
+      setLoading(false);
+    };
+
+    fetchAssessmentData();
+  }, []);
+
+  if (loading) {
+    return <p>Loading data...</p>;
+  }
+
+  return (
+    <div className="modal">
+      <div className="modal-content">
+        <h3>Detailed View</h3>
+        {Object.keys(assessmentData).length === 0 ? (
+          <p>No data available.</p>
+        ) : (
+          Object.keys(assessmentData).map((accessedEmail) => (
+            <div key={accessedEmail}>
+              <p><strong>Student Name:</strong> {accessedEmail}</p>
+              
+              <table className="styled-table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Cooperation</th>
+                    <th>Conceptual</th>
+                    <th>Practical</th>
+                    <th>Work Ethic</th>
+                    <th>Average Across All</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assessmentData[accessedEmail].map((student, index) => (
+                    <tr key={index}>
+                      <td>{student.Accessor_Email}</td>
+                      <td>{student.Ratings.cooperation}</td>
+                      <td>{student.Ratings.conceptualContribution}</td>
+                      <td>{student.Ratings.practicalContribution}</td>
+                      <td>{student.Ratings.workEthic}</td>
+                      <td>{student.average}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <h4>Comments:</h4>
+              {assessmentData[accessedEmail].map((student, index) => (
+                <p key={index}>
+                  <strong>{student.Accessor_Email} comment:</strong> {student.Comments || "No comments"}
+                </p>
+              ))}
+            </div>
+          ))
+        )}
+        <button onClick={onClose} className="close-btn">Close</button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
 
 export default InstructorDashboard;
