@@ -242,6 +242,7 @@ const SummaryViewModal = ({ onClose }) => {
 
   return (
     <div className="modal">
+    <div className="modal-content summary-view">
       <h2>Summary of Results View</h2>
       <table>
         <thead>
@@ -268,6 +269,7 @@ const SummaryViewModal = ({ onClose }) => {
         </tbody>
       </table>
       <button onClick={onClose}>Close</button>
+    </div>
     </div>
   );
 };
