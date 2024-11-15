@@ -273,109 +273,75 @@ const SummaryViewModal = ({ onClose }) => {
     </div>
   );
 };
-const DetailedViewModal = ({ onClose }) => {
-  const [detailedData, setDetailedData] = useState([]);
-  const [loading, setLoading] = useState(true);
+const DetailedViewModal = ({ onClose }) => (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Detailed View</h3>
+      <p><strong>Team Name:</strong> 12</p>
+      <p><strong>Student Name:</strong> 2@gmail.com</p>
+      
+      <table className="styled-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Cooperation</th>
+            <th>Conceptual</th>
+            <th>Practical</th>
+            <th>Work Ethic</th>
+            <th>Average Across All</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>efgh@mail.com</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+            <td>2</td>
+            <td>2.00</td>
+          </tr>
+          
+          {/* Additional rows as necessary */}
+        </tbody>
+      </table>
 
-  useEffect(() => {
-    const fetchDetailedData = async () => {
-      const { data, error } = await supabase
-        .from('Assessments')
-        .select('Accessed_email, Accessor_Email, Ratings, Comments');
+      <h4>Comments:</h4>
+      <p><strong>efgh@mail.com comment:</strong> No comments</p>
 
-      if (error) {
-        console.error("Error fetching detailed data:", error);
-      } else {
-        console.log("Fetched data:", data); // Log the fetched data to verify it
+      <p><strong>Student Name:</strong> 1@gmail.com</p>
+      
+      <table className="styled-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Cooperation</th>
+            <th>Conceptual</th>
+            <th>Practical</th>
+            <th>Work Ethic</th>
+            <th>Average Across All</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>efgh@mail.com</td>
+            <td>4</td>
+            <td>4</td>
+            <td>5</td>
+            <td>3</td>
+            <td>4.00</td>
+          </tr>
+          
+          {/* Additional rows as necessary */}
+        </tbody>
+      </table>
 
-        if (data && data.length > 0) {
-          // Group data by Accessed_email (each student's assessment)
-          const groupedData = data.reduce((acc, assessment) => {
-            const { Accessed_email } = assessment;
-            if (!acc[Accessed_email]) acc[Accessed_email] = [];
-            
-            // Calculate the average for each row of ratings
-            const { cooperation = 0, conceptualContribution = 0, practicalContribution = 0, workEthic = 0 } = assessment.Ratings || {};
-            const average = (
-              (cooperation + conceptualContribution + practicalContribution + workEthic) / 4
-            ).toFixed(2);
-
-            acc[Accessed_email].push({
-              ...assessment,
-              average,
-            });
-
-            return acc;
-          }, {});
-
-          setDetailedData(groupedData);
-        } else {
-          console.warn("No data found in the 'Assessments' table.");
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchDetailedData();
-  }, []);
-
-  if (loading) {
-    return <p>Loading data...</p>;
-  }
-
-  return (
-    <div className="modal">
-      <div className="modal-content">
-        <h3>Detailed View</h3>
-        <p><strong>Team Name:</strong> 12</p>
-
-        {Object.keys(detailedData).length === 0 ? (
-          <p>No data available.</p>
-        ) : (
-          Object.keys(detailedData).map((accessedEmail, tableIndex) => (
-            <div key={tableIndex}>
-              <p><strong>Student Name:</strong> {accessedEmail}</p>
-
-              <table className="styled-table">
-                <thead>
-                  <tr>
-                    <th>Member</th>
-                    <th>Cooperation</th>
-                    <th>Conceptual</th>
-                    <th>Practical</th>
-                    <th>Work Ethic</th>
-                    <th>Average Across All</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {detailedData[accessedEmail].map((student, rowIndex) => (
-                    <tr key={rowIndex}>
-                      <td>{student.Accessor_Email}</td>
-                      <td>{student.Ratings.cooperation}</td>
-                      <td>{student.Ratings.conceptualContribution}</td>
-                      <td>{student.Ratings.practicalContribution}</td>
-                      <td>{student.Ratings.workEthic}</td>
-                      <td>{student.average}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <h4>Comments:</h4>
-              {detailedData[accessedEmail].map((student, commentIndex) => (
-                <p key={commentIndex}>
-                  <strong>{student.Accessor_Email} comment:</strong> {student.Comments.cooperation || "No comments"}
-                </p>
-              ))}
-              <p>...</p> {/* Add more hardcoded comments if needed */}
-            </div>
-          ))
-        )}
-        <button onClick={onClose} className="close-btn">Close</button>
-      </div>
+      <h4>Comments:</h4>
+      <p><strong>efgh@mail.com comment:</strong> No comments</p>
+      
+      <button onClick={onClose} className="close-btn">Close</button>
     </div>
-  );
-};
+  </div>
+);
 
 
 
