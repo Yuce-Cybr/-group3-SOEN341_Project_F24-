@@ -50,7 +50,7 @@ jobs:
       - name: Run tests
         run: |
           cd Frontend
-          npm start
+          npm test
 
       # Build the project
       - name: Build the project
