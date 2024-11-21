@@ -9,27 +9,25 @@ on:
       - pipeline  # Runs on pull requests to the main branch
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Navigate to frontend directory
-        run: cd frontend  # Change this to your frontend folder name if needed
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
+      # Navigate to the frontend folder, assuming package.json is there
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd frontend
+          npm install
 
       - name: Run tests
-        run: npm test -- --watchAll=false
+        run: |
+          cd frontend
+          npm test -- --watchAll=false
 
-      - name: Build the app
-        run: npm run build
-
+      - name: Build app
+        run: |
+          cd frontend
+          npm run build
