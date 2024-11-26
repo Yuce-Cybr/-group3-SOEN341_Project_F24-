@@ -124,7 +124,7 @@ const StudentDashboard = () => {
 
     setCompletedAssessments(prev => prev + 1);
 
-    setSubmissionNotification(`Assessment submitted for ${membercdEmail}!`);
+    setSubmissionNotification(`Assessment submitted for ${memberEmail}!`);
     setTimeout(() => {
       setSubmissionNotification(null);
     }, 3000);
@@ -261,8 +261,8 @@ const StudentDashboard = () => {
               <h3>Your Team ID: {teamId}</h3>
               <h4>Team Members:</h4>
               <ul>
-<<<<<<< HEAD
-                {teamMembers.filter(member => member.email !== user.email).map(member => (
+
+              {teamMembers.filter(member => member.email !== user.email).map(member => (
                   <li key={member.email}>
                     <span 
                       onClick={() => handleMemberClick(member.email)} 
@@ -277,30 +277,6 @@ const StudentDashboard = () => {
                     ) : null}
                   </li>
                 ))}
-=======
-
-                {filteredTeamMembers.length > 0 ? (
-                  filteredTeamMembers.map(member => (
-                    <li key={member.email}>
-                      <span 
-                        onClick={() => handleMemberClick(member.email)} 
-                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-                      >
-                        {member.email}
-                      </span>
-                      {/* Render the Peer Assessment Form for the selected member or review assessment if submitted */}
-                      {selectedMember === member.email ? (
-                        submitted[member.email] ? 
-                          renderSubmittedAssessment(member.email) :
-                          renderAssessmentForm(member.email)
-                      ) : null}
-                    </li>
-
-                  ))
-                ) : (
-                  <li>No team members found.</li>
-                )}
->>>>>>> e8fba33932cd1b06baab8b36cb8620d9fe35fe03
               </ul>
             </div>
           ) : (
@@ -312,10 +288,6 @@ const StudentDashboard = () => {
   );
 };
 
-<<<<<<< HEAD
-export default StudentDashboard;
-=======
 
 export default StudentDashboard;
 
->>>>>>> e8fba33932cd1b06baab8b36cb8620d9fe35fe03
