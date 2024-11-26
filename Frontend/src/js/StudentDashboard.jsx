@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../controllers/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
-import supabase from './supabase';
+import supabase from '../controllers/supabase';
 import SidebarComponent from './SidebarComponent';
-import '../src/StudentDashboard.css';
+import '../css/StudentDashboard.css';
 
 const StudentDashboard = () => {
   const { user, role, logout } = useAuth();

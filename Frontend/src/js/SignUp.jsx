@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './App.css';  // Ensure the CSS file is imported correctly
+import '../css/App.css';  // Ensure the CSS file is imported correctly
 import { useNavigate } from 'react-router-dom';
-import supabase from './supabase';
+import supabase from '../controllers/supabase';
 
 function SignUp() {
   const [email, setEmail] = useState('');

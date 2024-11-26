@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./SidebarComponent.css";
+import "../css/SidebarComponent.css";
 
 const SidebarComponent = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);

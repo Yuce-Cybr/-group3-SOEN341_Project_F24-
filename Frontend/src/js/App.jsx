@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';  // Import the AuthContext
+import { useAuth } from '../controllers/AuthContext';  // Import the AuthContext
 import HomePage from './HomePage';  
 import SignUp from './SignUp';      
 import StudentDashboard from './StudentDashboard';  

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../controllers/AuthContext';
 import { Navigate } from 'react-router-dom';
-import supabase from './supabase';
+import supabase from '../controllers/supabase';
 import SidebarComponent from './SidebarComponent';
-import '../src/InstructorDashboard.css';
+import '../css/InstructorDashboard.css';
 
 const InstructorDashboard = () => {
   const { user, role, logout } = useAuth();

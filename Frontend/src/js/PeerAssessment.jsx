@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../controllers/AuthContext';
 import { Navigate, useParams } from 'react-router-dom';
 import SidebarComponent from './SidebarComponent';
-import '../src/PeerAssessment.css'; // Add your styles here
+import '../css/PeerAssessment.css'; // Add your styles here
 
 const PeerAssessment = () => {
 const { user, role  } = useAuth();
