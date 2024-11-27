@@ -41,6 +41,15 @@ const InstructorDashboard = () => {
     fetchUsersAndTeams();
   }, []);
 
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentTime(new Date().toLocaleTimeString());
+  }, 1000);
+
+  return () => clearInterval(interval); // Cleanup on unmount
+}, []);
   const handleCsvUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
