@@ -12,7 +12,8 @@ Ensuring equal contribution and accountability among team members in many univer
 
 The proposed peer assessment system addresses these challenges by enabling students to anonymously evaluate their peers based on predefined criteria. This system will allow for transparent feedback on each member's cooperation, conceptual contributions, practical contributions, and overall work ethic, promoting better teamwork and personal accountability. Instructors will be able to monitor the assessments to ensure that feedback is fair and consistent, thus fostering an improved learning environment.
 
-## Team Members and Roles (Throughoutthe project, members change role so that everyone has a chance to work on something different for the project)
+## Team Members and Roles 
+(Throughout the project, members change role so that everyone has a chance to work on something different for the project)
 
 - **Mridul**:
   Responsible for task breakdowns and the creation of user stories. She ensures that the project is organized and that individual tasks are clearly defined. Mridul also takes meeting minutes and tracks team progress throughout the development cycle.
