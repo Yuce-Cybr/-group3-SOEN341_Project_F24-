@@ -16,13 +16,7 @@ const InstructorDashboard = () => {
   const [newTeamName, setNewTeamName] = useState('');
   const [csvData, setCsvData] = useState(null);
   const [isSummaryViewOpen, setIsSummaryViewOpen] = useState(false);
-  const [isDetailedViewOpen, setIsDetailedViewOpen] = useState(false);
   const [summaryData, setSummaryData] = useState([]);
-  const [detailedViewData, setDetailedViewData] = useState({
-    teamName: '',
-    studentName: '',
-    members: [],
-  });
 
   // Fetch users and teams
   const fetchUsersAndTeams = async () => {
@@ -63,49 +57,6 @@ const InstructorDashboard = () => {
       setSummaryData(formattedData);
     }
     setLoading(false);
-  };
-
-  // Fetch detailed view data
-  const fetchDetailedViewData = async (teamName, accessedEmail) => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('assessments')
-      .select('Accessor_email, Ratings, Comments')
-      .eq('team_name', teamName)
-      .eq('Accessed_Email', accessedEmail);
-
-    if (error) {
-      console.error('Error fetching detailed view data:', error);
-      setLoading(false);
-      return null;
-    }
-
-    const formattedData = data.map((item) => {
-      const { Ratings } = item;
-      const average =
-        (Ratings.cooperation +
-          Ratings.conceptual +
-          Ratings.practical +
-          Ratings.work_ethic) /
-        4;
-
-      return {
-        name: item.Accessor_email,
-        cooperation: Ratings.cooperation,
-        conceptual: Ratings.conceptual,
-        practical: Ratings.practical,
-        workEthic: Ratings.work_ethic,
-        average,
-        comment: item.Comments,
-      };
-    });
-
-    setLoading(false);
-    return {
-      teamName,
-      studentName: accessedEmail,
-      members: formattedData,
-    };
   };
 
   useEffect(() => {
@@ -174,22 +125,6 @@ const InstructorDashboard = () => {
     }
   };
 
-  const openDetailedView = async (teamName, accessedEmail) => {
-    const detailedData = await fetchDetailedViewData(teamName, accessedEmail);
-
-    if (detailedData) {
-      setDetailedViewData(detailedData);
-      setIsDetailedViewOpen(true);
-    } else {
-      console.error('Failed to fetch detailed view data.');
-    }
-  };
-
-  const closeDetailedView = () => {
-    setIsDetailedViewOpen(false);
-    setDetailedViewData({ teamName: '', studentName: '', members: [] });
-  };
-
   if (!user || role !== 'Instructor') {
     return <Navigate to="/" />;
   }
@@ -250,45 +185,6 @@ const InstructorDashboard = () => {
                 </tbody>
               </table>
             </div>
-          ) : isDetailedViewOpen ? (
-            <div>
-              <h2>Detailed View</h2>
-              <p><strong>Team Name:</strong> {detailedViewData.teamName}</p>
-              <p><strong>Student Name:</strong> {detailedViewData.studentName}</p>
-              <table className="styled-table">
-                <thead>
-                  <tr>
-                    <th>Member</th>
-                    <th>Cooperation</th>
-                    <th>Conceptual</th>
-                    <th>Practical</th>
-                    <th>Work Ethic</th>
-                    <th>Average Across All</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {detailedViewData.members.map((member, index) => (
-                    <tr key={index}>
-                      <td>{member.name}</td>
-                      <td>{member.cooperation}</td>
-                      <td>{member.conceptual}</td>
-                      <td>{member.practical}</td>
-                      <td>{member.workEthic}</td>
-                      <td>{member.average.toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <h4>Comments:</h4>
-              {detailedViewData.members.map((member, index) => (
-                <p key={index}>
-                  <strong>{member.name} comment:</strong> {member.comment || "No comments"}
-                </p>
-              ))}
-              <button onClick={closeDetailedView} className="close-btn">
-                Close Detailed View
-              </button>
-            </div>
           ) : (
             <div>
               <h2>User List</h2>
@@ -319,18 +215,6 @@ const InstructorDashboard = () => {
                             </option>
                           ))}
                         </select>
-                      </td>
-                      <td>
-                        <button
-                          onClick={() =>
-                            openDetailedView(
-                              teams.find(team => team.team_id === user.team_id)?.team_id,
-                              user.email
-                            )
-                          }
-                        >
-                          View Details
-                        </button>
                       </td>
                     </tr>
                   ))}
