@@ -71,10 +71,4 @@ jobs:
           name: test-results
           path: ./Frontend/test-results # Adjust if test results are output elsewhere
 
-      # Step 11: Upload coverage report
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: ./Frontend/coverage
+      
