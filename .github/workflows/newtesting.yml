@@ -1,0 +1,36 @@
+name: Node.js CI for Frontend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Step 3: Navigate to the frontend directory
+      - name: Change to frontend directory
+        run: cd frontend
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      # Step 5: Run tests
+      - name: Run tests
+        working-directory: ./frontend
+        run: npm test
