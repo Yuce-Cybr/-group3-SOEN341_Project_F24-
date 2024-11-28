@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from '../js/App'; // Adjust the path as needed
+import App from '../js/App';
 
-test('renders the home page title', () => {
+test('renders learn react link', () => {
   render(<App />);
-  const titleElement = screen.getByText(/RateMyPeer/i); // Replace with the actual title text
-  expect(titleElement).toBeInTheDocument();
+  const linkElement = screen.getByText(/learn react/i); // Likely failing here
+  expect(linkElement).toBeInTheDocument();
 });
