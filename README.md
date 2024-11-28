@@ -30,12 +30,17 @@ The proposed peer assessment system addresses these challenges by enabling stude
 - **Youssef**:
   Youssef is responsible for the front-end development, ensuring that the user interface is functional, intuitive, and meets the project’s design specifications.
 
-- **David**:
+- **David Makary (40189198)**:
   David is in charge of the back-end development, focusing on building the system architecture, APIs, and database structure to support the peer assessment functionalities.
 
 ## New features added
 
 In addition to being a basic Peer assessment website, we implemented 2 other features which are: self-assessment (so that students can assess themselves and instructor can see students own feedback) and reminder (intructor can send a reminder to students that did not complete the peer assessment yet).
+
+## Instructions to run website
+1. Clone the repository
+2. In terminal cd into "frondtend"
+3. In terminal run "npm start"
 
 
 
