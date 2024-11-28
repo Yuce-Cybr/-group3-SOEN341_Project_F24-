@@ -38,7 +38,7 @@ const InstructorDashboard = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('Assessments')
-      .select('Accessed_Email, Ratings')
+      .select('Team_name, Student_ID, First_name, Last_name, Ratings')
       .not('Ratings', 'is', null);
 
     if (error) {
@@ -52,7 +52,17 @@ const InstructorDashboard = () => {
             ratings.practicalContribution +
             ratings.workEthic) / 4;
 
-        return { ...assessment, average };
+        return {
+          team_name: assessment.Team_name,
+          student_ID: assessment.Student_ID,
+          first_name: assessment.First_name,
+          last_name: assessment.Last_name,
+          cooperation: ratings.cooperation,
+          conceptualContribution: ratings.conceptualContribution,
+          practicalContribution: ratings.practicalContribution,
+          workEthic: ratings.workEthic,
+          average,
+        };
       });
       setSummaryData(formattedData);
     }
@@ -163,7 +173,10 @@ const InstructorDashboard = () => {
               <table className="styled-table">
                 <thead>
                   <tr>
-                    <th>Member ID</th>
+                    <th>Team Name</th>
+                    <th>Student ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
                     <th>Cooperation</th>
                     <th>Conceptual Contribution</th>
                     <th>Practical Contribution</th>
@@ -174,11 +187,14 @@ const InstructorDashboard = () => {
                 <tbody>
                   {summaryData.map((student, index) => (
                     <tr key={index}>
-                      <td>{student.Accessed_Email}</td>
-                      <td>{student.Ratings.cooperation}</td>
-                      <td>{student.Ratings.conceptualContribution}</td>
-                      <td>{student.Ratings.practicalContribution}</td>
-                      <td>{student.Ratings.workEthic}</td>
+                      <td>{student.team_name}</td>
+                      <td>{student.student_ID}</td>
+                      <td>{student.first_name}</td>
+                      <td>{student.last_name}</td>
+                      <td>{student.cooperation}</td>
+                      <td>{student.conceptualContribution}</td>
+                      <td>{student.practicalContribution}</td>
+                      <td>{student.workEthic}</td>
                       <td>{student.average.toFixed(2)}</td>
                     </tr>
                   ))}
