@@ -18,6 +18,7 @@ const InstructorDashboard = () => {
   const [isSummaryViewOpen, setIsSummaryViewOpen] = useState(false);
   const [summaryData, setSummaryData] = useState([]);
   const [pendingAssessments, setPendingAssessments] = useState([])
+  const [isDetailedViewOpen, setIsDetailedViewOpen] = useState(false);
   // Fetch users and teams
   const fetchUsersAndTeams = async () => {
     setLoading(true);
@@ -153,6 +154,16 @@ const InstructorDashboard = () => {
     } else {
       fetchSummaryData();
       setIsSummaryViewOpen(true);
+      setIsDetailedViewOpen(false);
+    }
+  };
+  const toggleDetailedView = () => {
+    if (isDetailedViewOpen) {
+      setIsDetailedViewOpen(false);
+    } else {
+      fetchSummaryData(); // Reuse fetchSummaryData() for detailed view
+      setIsDetailedViewOpen(true);
+      setIsSummaryViewOpen(false); // Ensure summary view is closed
     }
   };
 
@@ -183,83 +194,131 @@ const InstructorDashboard = () => {
           <button onClick={toggleSummaryView}>
             {isSummaryViewOpen ? 'Back to User Table' : 'Summary View'}
           </button>
+          <button onClick={toggleDetailedView}>
+            {isDetailedViewOpen ? 'Back to User Table' : 'Detailed Results'}
+          </button>
         </section>
   
         <section className="users-table">
-          {loading ? (
-            <p>Loading...</p>
-          ) : isSummaryViewOpen ? (
-            <div>
-              <h2>Summary of Results</h2>
-              <table className="styled-table">
-                <thead>
-                  <tr>
-                    <th>Team Name</th>
-                    <th>Student ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Cooperation</th>
-                    <th>Conceptual Contribution</th>
-                    <th>Practical Contribution</th>
-                    <th>Work Ethic</th>
-                    <th>Average</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summaryData.map((student, index) => (
-                    <tr key={index}>
-                      <td>{student.team_name}</td>
-                      <td>{student.student_ID}</td>
-                      <td>{student.first_name}</td>
-                      <td>{student.last_name}</td>
-                      <td>{student.cooperation}</td>
-                      <td>{student.conceptualContribution}</td>
-                      <td>{student.practicalContribution}</td>
-                      <td>{student.workEthic}</td>
-                      <td>{student.average.toFixed(2)}</td>
-                    </tr>
+        {loading ? (
+    <p>Loading...</p>
+  ) : isSummaryViewOpen ? (
+    <div>
+      <h2>Summary of Results</h2>
+      {/* Single consolidated table for all students */}
+      <table className="styled-table">
+        <thead>
+          <tr>
+            <th>Team Name</th>
+            <th>Student ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Cooperation</th>
+            <th>Conceptual Contribution</th>
+            <th>Practical Contribution</th>
+            <th>Work Ethic</th>
+            <th>Average</th>
+          </tr>
+        </thead>
+        <tbody>
+          {summaryData.map((student, index) => (
+            <tr key={index}>
+              <td>{student.team_name}</td>
+              <td>{student.student_ID}</td>
+              <td>{student.first_name}</td>
+              <td>{student.last_name}</td>
+              <td>{student.cooperation}</td>
+              <td>{student.conceptualContribution}</td>
+              <td>{student.practicalContribution}</td>
+              <td>{student.workEthic}</td>
+              <td>{student.average.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : isDetailedViewOpen ? (
+    <div>
+      <h2>Detailed Results</h2>
+      {/* Detailed table and comments for each student */}
+      {summaryData.map((student, index) => (
+        <div key={index} className="individual-table">
+          <h3>Detailed View</h3>
+          <p><strong>Team Name:</strong> {student.team_name}</p>
+          <p><strong>Student Name:</strong> {student.first_name} {student.last_name}</p>
+
+          {/* Table for Team Member Ratings */}
+          <table className="styled-table">
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Cooperation</th>
+                <th>Conceptual</th>
+                <th>Practical</th>
+                <th>Work Ethic</th>
+                <th>Average Across All</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Example data for team members */}
+              <tr>
+                <td>{student.first_name} {student.last_name}</td>
+                <td>{student.cooperation}</td>
+                <td>{student.conceptualContribution}</td>
+                <td>{student.practicalContribution}</td>
+                <td>{student.workEthic}</td>
+                <td>{student.average.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Comments Section */}
+          <div className="comments-section">
+            <h4>Comments:</h4>
+            {/* Placeholder for Comments - Replace with dynamic data if available */}
+            <p><strong>{student.first_name} {student.last_name} comment:</strong> {student.comment || 'No comment'}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div>
+      <h2>User List</h2>
+      <table className="styled-table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Email</th>
+            <th>Team</th>
+            <th>Assign Team</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredUsers.map(user => (
+            <tr key={user.user_id}>
+              <td>{user.user_id}</td>
+              <td>{user.email}</td>
+              <td>{teams.find(team => team.team_id === user.team_id)?.team_id || 'Unassigned'}</td>
+              <td>
+                <select
+                  value={user.team_id || ''}
+                  onChange={(e) => handleAssignTeam(user.email, e.target.value)}
+                >
+                  <option value="">Select Team</option>
+                  {teams.map(team => (
+                    <option key={team.team_id} value={team.team_id}>
+                      {team.team_id}
+                    </option>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div>
-              <h2>User List</h2>
-              <table className="styled-table">
-                <thead>
-                  <tr>
-                    <th>User ID</th>
-                    <th>Email</th>
-                    <th>Team</th>
-                    <th>Assign Team</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map(user => (
-                    <tr key={user.user_id}>
-                      <td>{user.user_id}</td>
-                      <td>{user.email}</td>
-                      <td>{teams.find(team => team.team_id === user.team_id)?.team_id || 'Unassigned'}</td>
-                      <td>
-                        <select
-                          value={user.team_id || ''}
-                          onChange={(e) => handleAssignTeam(user.email, e.target.value)}
-                        >
-                          <option value="">Select Team</option>
-                          {teams.map(team => (
-                            <option key={team.team_id} value={team.team_id}>
-                              {team.team_id}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</section>
   
         {/* Pending Assessments Section */}
         <section className="pending-assessments">
