@@ -153,5 +153,7 @@ body, html {
   }
 }
 
-
+h1.website-title {
+  font-variant-ligatures: no-common-ligatures;
+}
 
