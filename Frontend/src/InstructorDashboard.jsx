@@ -17,7 +17,7 @@ const InstructorDashboard = () => {
   const [csvData, setCsvData] = useState(null);
   const [isSummaryViewOpen, setIsSummaryViewOpen] = useState(false);
   const [summaryData, setSummaryData] = useState([]);
-
+  const [pendingAssessments, setPendingAssessments] = useState([])
   // Fetch users and teams
   const fetchUsersAndTeams = async () => {
     setLoading(true);
@@ -83,7 +83,28 @@ const InstructorDashboard = () => {
       });
     }
   };
+  const fetchPendingAssessments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('students') // Query the `students` table
+        .select('email') // Select the email of students
+        .eq('assessment_status', 'Pending'); // Filter students with "Pending" status
+  
+      if (error) {
+        console.error('Error fetching pending assessments:', error);
+      } else {
+        setPendingAssessments(data.map(item => item.email)); // Set the emails of students with pending assessments
+      }
+    } catch (err) {
+      console.error('Error fetching pending assessments:', err);
+    }
+  };
+  
 
+  useEffect(() => {
+    fetchUsersAndTeams();
+    fetchPendingAssessments(); // Fetch pending assessments on load
+  }, []);
   const handleImportCsv = async () => {
     if (csvData) {
       const newUsers = csvData.map(row => ({
@@ -147,14 +168,14 @@ const InstructorDashboard = () => {
           <h2>Instructor Dashboard</h2>
           <button onClick={logout} className="logout-btn">Logout</button>
         </header>
-
+  
         <section className="profile-card">
           <h3>Instructor Profile</h3>
           <p><strong>Name:</strong> {user.name || "Instructor"}</p>
           <p><strong>Email:</strong> {user.email}</p>
           <p><strong>Role:</strong> {role}</p>
         </section>
-
+  
         <section className="actions">
           <input type="file" accept=".csv" onChange={handleCsvUpload} />
           <button onClick={handleImportCsv} disabled={!csvData}>Import CSV</button>
@@ -163,7 +184,7 @@ const InstructorDashboard = () => {
             {isSummaryViewOpen ? 'Back to User Table' : 'Summary View'}
           </button>
         </section>
-
+  
         <section className="users-table">
           {loading ? (
             <p>Loading...</p>
@@ -239,9 +260,40 @@ const InstructorDashboard = () => {
             </div>
           )}
         </section>
+  
+        {/* Pending Assessments Section */}
+        <section className="pending-assessments">
+          <h2>Pending Assessments</h2>
+          {pendingAssessments.length === 0 ? (
+            <p>No pending assessments.</p>
+          ) : (
+            <table className="styled-table">
+              <thead>
+                <tr>
+                  <th>Student Email</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingAssessments.map((email, index) => (
+                  <tr key={index}>
+                    <td>{email}</td>
+                    <td>
+                      <button
+                        onClick={() => alert(`Reminder sent to ${email}`)} // Replace with email-sending logic
+                        className="reminder-btn"
+                      >
+                        Send Reminder
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
       </div>
     </div>
   );
-};
-
+                };  
 export default InstructorDashboard;
