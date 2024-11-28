@@ -1,10 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import App from '../js/App';
 
-
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test('renders the home page title', () => {
+  render(
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  );
+  const titleElement = screen.getByText(/RateMyPeer/i); // Replace with actual title text
+  expect(titleElement).toBeInTheDocument();
 });
