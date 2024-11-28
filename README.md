@@ -9,13 +9,17 @@ This project consists of creating a peer assessment system meant to be used for 
 - **Aryan**
 - **Paul**
 - **Sitherankan**
-- **Youssef**
-- **David**
+- **Youssef Yacoub (40189020)**
+- **David Makary (40189198)**
 
 ## Team Roles:
 - **Mridul and Aryan**: Task Breakdown and user stories 
-- **Paul and Sitherankan**: ReadMe and managing GitHub
-- **Youssef**: Front-end
-- **David**: Back-end
+- **Paul and Sitherankan**: ReadMe and managing GitHub & Sprint Planning & Development.
+- **Youssef**: Front-end developper
+- **David**: Back-end developper
 - **Mridul**: Meeting Minutes
-- **Paul and Sitherankan**: Sprint Planning
+
+## Instructions to run website
+1. Clone the repository
+2. In terminal cd into "frondtend"
+3. In terminal run "npm start"
