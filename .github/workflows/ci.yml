@@ -1,0 +1,62 @@
+name: Frontend CI
+
+on:
+  # Run this workflow on push and pull_request events for the 'testing' branch
+  push:
+    branches:
+      - testing
+  pull_request:
+    branches:
+      - testing
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Step 3: Cache npm dependencies (optional, speeds up builds)
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      # Step 5: Run tests
+      - name: Run tests
+        working-directory: ./frontend
+        env:
+          CI: true # Prevent Jest from running in interactive mode
+        run: npm test
+
+      # Step 6: Upload test results (optional, for debugging failed tests)
+      - name: Upload test results
+        if: always() # Always upload results, even if the tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: ./frontend/test-results # Adjust if you output test results
+
+      # Step 7: (Optional) Generate code coverage reports
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./frontend/coverage
