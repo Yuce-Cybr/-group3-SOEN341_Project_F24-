@@ -1,7 +1,6 @@
 name: Frontend CI
 
 on:
-  # Run this workflow on push and pull_request events for the 'testing' branch
   push:
     branches:
       - testing
@@ -18,45 +17,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js environment
+      # Step 2: Debug directory structure (optional)
+      - name: List root directory
+        run: ls -la
+
+      # Step 3: Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Step 3: Cache npm dependencies (optional, speeds up builds)
+      # Step 4: Cache npm dependencies (optional)
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/frontend/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/Frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Step 4: Install dependencies
+      # Step 5: Install dependencies
       - name: Install dependencies
-        working-directory: ./frontend
+        working-directory: ./Frontend
         run: npm install
 
-      # Step 5: Run tests
+      # Step 6: Run tests
       - name: Run tests
-        working-directory: ./frontend
+        working-directory: ./Frontend
         env:
-          CI: true # Prevent Jest from running in interactive mode
+          CI: true
         run: npm test
-
-      # Step 6: Upload test results (optional, for debugging failed tests)
-      - name: Upload test results
-        if: always() # Always upload results, even if the tests fail
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: ./frontend/test-results # Adjust if you output test results
-
-      # Step 7: (Optional) Generate code coverage reports
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: ./frontend/coverage
