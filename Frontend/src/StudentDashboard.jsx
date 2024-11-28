@@ -16,7 +16,12 @@ const StudentDashboard = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [submissionNotification, setSubmissionNotification] = useState(null);
   const [completedAssessments, setCompletedAssessments] = useState(0);
-  
+  const [selfReflection, setSelfReflection] = useState({
+    ratings: { cooperation: 0, conceptualContribution: 0, practicalContribution: 0, workEthic: 0 },
+    comments: { cooperation: '', conceptualContribution: '', practicalContribution: '', workEthic: '' },
+  });
+  const [selfReflectionSubmitted, setSelfReflectionSubmitted] = useState(false); // Track self-reflection submission
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -130,21 +135,28 @@ const StudentDashboard = () => {
     setSelectedMember(null);
   };
 
-  const renderProgress = () => {
-    const totalMembers = teamMembers.length - 1;
-    const progressPercentage = (completedAssessments / totalMembers) * 100;
+  const handleSelfReflectionChange = (dimension, value, isRating) => {
+    setSelfReflection((prev) => ({
+      ...prev,
+      [isRating ? 'ratings' : 'comments']: {
+        ...prev[isRating ? 'ratings' : 'comments'],
+        [dimension]: value,
+      },
+    }));
+  };
 
-    return (
-      <div className="progress-container">
-        <p>Assessment Progress: {completedAssessments}/{totalMembers} completed</p>
-        <div className="progress-bar">
-          <div
-            className="progress-bar-filled"
-            style={{ width: `${progressPercentage}%` }}
-          ></div>
-        </div>
-      </div>
-    );
+  const handleSelfReflectionSubmit = () => {
+    const isValid = Object.values(selfReflection.ratings).every((rating) => rating > 0);
+    if (!isValid) {
+      alert("Please complete all ratings before submitting.");
+      return;
+    }
+
+    setSelfReflectionSubmitted(true);
+    setSubmissionNotification("Self-reflection submitted successfully!");
+    setTimeout(() => setSubmissionNotification(null), 3000);
+
+    // Optionally: send selfReflection data to the backend
   };
 
   const handleMemberClick = (memberEmail) => {
@@ -224,6 +236,71 @@ const StudentDashboard = () => {
     );
   };
 
+  const renderProgress = () => {
+    const totalMembers = teamMembers.length - 1;
+    const progressPercentage = (completedAssessments / totalMembers) * 100;
+
+    return (
+      <div className="progress-container">
+        <p>Assessment Progress: {completedAssessments}/{totalMembers} completed</p>
+        <div className="progress-bar">
+          <div
+            className="progress-bar-filled"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSelfReflectionForm = () => (
+    <div className="self-reflection">
+      <header className="dashboard-header">
+        <h2>Self-Reflection</h2>
+      </header>
+      <p>Evaluate your own contribution to the team on the following criteria.</p>
+
+      {Object.keys(selfReflection.ratings).map((dimension, index) => (
+        <div key={index} className="assessment-section">
+          <label className="assessment-label">
+            {dimension.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}:
+          </label>
+          <div className="rating">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <label key={num} className="rating-label">
+                <input
+                  type="radio"
+                  name={dimension}
+                  value={num}
+                  checked={selfReflection.ratings[dimension] === num}
+                  onChange={() => handleSelfReflectionChange(dimension, num, true)}
+                  disabled={selfReflectionSubmitted}
+                />
+                {num}
+              </label>
+            ))}
+          </div>
+
+          <textarea
+            className="assessment-comment"
+            placeholder={`Comments on ${dimension.replace(/([A-Z])/g, ' $1').toLowerCase()} (optional)`}
+            value={selfReflection.comments[dimension]}
+            onChange={(e) => handleSelfReflectionChange(dimension, e.target.value, false)}
+            disabled={selfReflectionSubmitted}
+          />
+        </div>
+      ))}
+
+      <button
+        onClick={handleSelfReflectionSubmit}
+        className="submit-button"
+        disabled={selfReflectionSubmitted}
+      >
+        Submit Self-Reflection
+      </button>
+    </div>
+  );
+
   return (
     <div className="dashboard-container">
       <SidebarComponent />
@@ -277,6 +354,24 @@ const StudentDashboard = () => {
             </div>
           ) : (
             <p>You are not assigned to any team.</p>
+          )}
+        </section>
+
+        <section className="self-reflection-section">
+          <h3>Self-Reflection</h3>
+          {selfReflectionSubmitted ? (
+            <div className="assessment-review">
+              <p>Your self-reflection submission:</p>
+              {Object.keys(selfReflection.ratings).map((dimension, index) => (
+                <div key={index} className="submitted-section">
+                  <strong>{dimension.replace(/([A-Z])/g, ' $1')}: </strong>
+                  <span>{selfReflection.ratings[dimension]}</span>
+                  <p><em>Comments: {selfReflection.comments[dimension]}</em></p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            renderSelfReflectionForm()
           )}
         </section>
       </div>
