@@ -42,5 +42,8 @@ In addition to being a basic Peer assessment website, we implemented 2 other fea
 2. In terminal cd into "frondtend"
 3. In terminal run "npm start"
 
+## Tools used for static analysis of the code
+1. We used ESlint to analyze the code written in JavaScript and were presented with 13 errors which could be solved to make our code more maintainable and readable.
+2. We also used Stylelint to verify the use of css and were encoutered with 3 major errors.
 
 
