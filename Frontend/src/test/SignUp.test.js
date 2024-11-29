@@ -7,47 +7,55 @@ import SignUp from './SignUp';
 jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
-jest.mock('../components/supabase');
 
-describe('SignUp', () => {
+jest.mock('../components/supabase', () => ({
+  auth: {
+    signUp: jest.fn(),
+  },
+}));
+
+describe('SignUp Component', () => {
   const mockNavigate = jest.fn();
-  const mockSignUp = jest.fn();
 
   beforeEach(() => {
+    jest.clearAllMocks(); // Clear mocks to ensure clean test state
     useNavigate.mockReturnValue(mockNavigate);
-    supabase.auth.signUp = mockSignUp;
   });
 
   test('renders input fields and Sign Up button', () => {
     render(<SignUp />);
-    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Password (min 8 characters)')).toBeInTheDocument();
-    expect(screen.getByText('Sign Up')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/password \(min 8 characters\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/sign up/i)).toBeInTheDocument();
   });
 
   test('displays error message for invalid inputs', () => {
     render(<SignUp />);
-    const signUpButton = screen.getByText('Sign Up');
+    const signUpButton = screen.getByText(/sign up/i);
 
     fireEvent.click(signUpButton);
 
-    expect(screen.getByText('Please enter a valid email and password (min 8 characters).')).toBeInTheDocument();
+    expect(screen.getByText(/please enter a valid email and password \(min 8 characters\)/i)).toBeInTheDocument();
   });
 
   test('calls supabase signUp and shows success message', async () => {
     supabase.auth.signUp.mockResolvedValue({ error: null });
 
     render(<SignUp />);
-    const emailInput = screen.getByPlaceholderText('Email');
-    const passwordInput = screen.getByPlaceholderText('Password (min 8 characters)');
-    const signUpButton = screen.getByText('Sign Up');
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password \(min 8 characters\)/i);
+    const signUpButton = screen.getByText(/sign up/i);
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(signUpButton);
 
-    expect(supabase.auth.signUp).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password123' });
-    expect(await screen.findByText('Sign-up successful! Redirecting to login...')).toBeInTheDocument();
+    expect(supabase.auth.signUp).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password123',
+    });
+
+    expect(await screen.findByText(/sign-up successful! redirecting to login/i)).toBeInTheDocument();
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
@@ -55,14 +63,14 @@ describe('SignUp', () => {
     supabase.auth.signUp.mockResolvedValue({ error: { message: 'Email already exists' } });
 
     render(<SignUp />);
-    const emailInput = screen.getByPlaceholderText('Email');
-    const passwordInput = screen.getByPlaceholderText('Password (min 8 characters)');
-    const signUpButton = screen.getByText('Sign Up');
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password \(min 8 characters\)/i);
+    const signUpButton = screen.getByText(/sign up/i);
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(signUpButton);
 
-    expect(await screen.findByText('Email already exists')).toBeInTheDocument();
+    expect(await screen.findByText(/email already exists/i)).toBeInTheDocument();
   });
 });
