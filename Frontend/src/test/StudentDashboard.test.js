@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useAuth } from '../components/AuthContext';
 import supabase from '../components/supabase';
-import StudentDashboard from './StudentDashboard';
+import StudentDashboard from './StudentDashboard.jsx';
 
 jest.mock('../components/AuthContext');
 jest.mock('../components/supabase');
