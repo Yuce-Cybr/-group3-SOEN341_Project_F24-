@@ -46,8 +46,8 @@ describe('SignUp Component', () => {
     const passwordInput = screen.getByPlaceholderText(/password \(min 8 characters\)/i);
     const signUpButton = screen.getByText(/sign up/i);
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(emailInput, { target: { value: 'efgh@mail.com' } });
+    fireEvent.change(passwordInput, { target: { value: '12345678' } });
     fireEvent.click(signUpButton);
 
     expect(supabase.auth.signUp).toHaveBeenCalledWith({
