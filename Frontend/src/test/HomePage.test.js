@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useAuth } from '../components/AuthContext';
-import HomePage from './HomePage';
+import HomePage from './HomePage.jsx';
 
 jest.mock('../components/AuthContext'); // Mock the AuthContext
 
