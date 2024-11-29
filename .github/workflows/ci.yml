@@ -1,4 +1,4 @@
-name: Frontend CI
+name: Frontend CI Workflow
 
 on:
   push:
@@ -17,32 +17,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Debug directory structure at the root level
+      # Step 2: Debug the file structure
       - name: List root directory
         run: ls -la
 
-      # Step 3: Debug specific Frontend folder structure
       - name: List Frontend directory
-        if: success() # Only run this if the root listing is successful
         run: ls -la ./Frontend
 
-      # Step 4: Debug public folder inside Frontend
-      - name: List public directory in Frontend
-        if: success()
-        run: ls -la ./Frontend/public
-
-      # Step 5: Debug src folder inside Frontend
-      - name: List src directory in Frontend
-        if: success()
-        run: ls -la ./Frontend/src
-
-      # Step 6: Set up Node.js environment
+      # Step 3: Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # Step 7: Cache npm dependencies
+      # Step 4: Cache npm dependencies
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
@@ -51,24 +39,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Step 8: Install dependencies
+      # Step 5: Install dependencies
       - name: Install dependencies
         working-directory: ./Frontend
         run: npm install
 
-      # Step 9: Run tests
+      # Step 6: Run tests
       - name: Run tests
         working-directory: ./Frontend
         env:
           CI: true # Prevent Jest from running in interactive mode
         run: npm test
 
-      # Step 10: Upload test results
+      # Step 7: Debug test output (Optional)
+      - name: Debug Jest output
+        if: always() # This runs regardless of test success/failure
+        run: cat ./Frontend/test-results
+
+      # Step 8: Upload test results
       - name: Upload test results
-        if: always() # Always upload results, even if the tests fail
+        if: always() # Upload results even if tests fail
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: ./Frontend/test-results # Adjust if test results are output elsewhere
+          path: ./Frontend/test-results # Make sure this directory exists and is configured in Jest
 
-     
+      # Step 9: Upload coverage report
+      - name: Upload coverage report
+        if: always() # Upload even if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./Frontend/coverage # Ensure coverage is configured in Jest
