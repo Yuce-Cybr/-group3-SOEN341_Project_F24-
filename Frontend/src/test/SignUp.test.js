@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../components/supabase';
-import SignUp from './SignUp';
+import SignUp from './SignUp.jsx';
 
 jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
