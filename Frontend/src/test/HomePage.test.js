@@ -9,39 +9,63 @@ describe('HomePage', () => {
   const mockLogin = jest.fn();
 
   beforeEach(() => {
+    jest.clearAllMocks(); // Ensure no residual mocks between tests
     useAuth.mockReturnValue({ login: mockLogin });
   });
 
-  test('renders input fields and buttons', () => {
+  test('renders input fields, role dropdown, and buttons', () => {
     render(<HomePage />);
-    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    expect(screen.getByText('Sign In')).toBeInTheDocument();
-    expect(screen.getByText('Sign Up')).toBeInTheDocument();
+    // Verify input fields
+    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
+    // Verify dropdown and buttons
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByText(/sign in/i)).toBeInTheDocument();
+    expect(screen.getByText(/sign up/i)).toBeInTheDocument();
   });
 
   test('updates input fields and calls login on Sign In', () => {
     render(<HomePage />);
-    const emailInput = screen.getByPlaceholderText('Email');
-    const passwordInput = screen.getByPlaceholderText('Password');
+    // Get input fields, dropdown, and button
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
     const roleSelect = screen.getByRole('combobox');
-    const signInButton = screen.getByText('Sign In');
+    const signInButton = screen.getByText(/sign in/i);
 
+    // Simulate user input
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.change(roleSelect, { target: { value: 'Instructor' } });
 
+    // Simulate button click
     fireEvent.click(signInButton);
 
+    // Verify the login function is called with the correct arguments
     expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123', 'Instructor');
   });
 
   test('displays an error message if email or password is missing', () => {
     render(<HomePage />);
-    const signInButton = screen.getByText('Sign In');
+    const signInButton = screen.getByText(/sign in/i);
 
+    // Simulate button click without entering email or password
     fireEvent.click(signInButton);
 
-    expect(screen.getByText('Please enter both email and password.')).toBeInTheDocument();
+    // Verify the error message is displayed
+    expect(screen.getByText(/please enter both email and password/i)).toBeInTheDocument();
+  });
+
+  test('allows navigation to the Sign Up page', () => {
+    const mockNavigate = jest.fn();
+    useAuth.mockReturnValue({ login: mockLogin, navigate: mockNavigate });
+
+    render(<HomePage />);
+    const signUpButton = screen.getByText(/sign up/i);
+
+    // Simulate Sign Up button click
+    fireEvent.click(signUpButton);
+
+    // Verify navigation was triggered
+    expect(mockNavigate).toHaveBeenCalledWith('/signup');
   });
 });
