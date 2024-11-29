@@ -33,9 +33,9 @@ describe('HomePage', () => {
     const signInButton = screen.getByText(/sign in/i);
 
     // Simulate user input
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.change(roleSelect, { target: { value: 'Instructor' } });
+    fireEvent.change(emailInput, { target: { value: 'efgh@mail.com' } });
+    fireEvent.change(passwordInput, { target: { value: '12345678' } });
+    fireEvent.change(roleSelect, { target: { value: 'Student' } });
 
     // Simulate button click
     fireEvent.click(signInButton);
